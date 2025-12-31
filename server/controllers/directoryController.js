@@ -200,6 +200,6 @@ export const deleteDirectory = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     console.log(err.message);
-    next(err);
+    return next(err);
   }
 };
