@@ -198,6 +198,8 @@ export const deleteDirectory = async (req, res, next) => {
     
     return successResponse(res, null, "Files deleted successfully");
   } catch (err) {
+    console.log(err);
+    console.log(err.message);
     next(err);
   }
 };
