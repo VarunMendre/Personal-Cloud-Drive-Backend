@@ -19,7 +19,9 @@ export const getDirectory = async (req, res) => {
   }
   const _id = req.params.id || user.rootDirId.toString();
 
-  const { success, data, error } = validateWithSchema(getDirectorySchema, { id: _id });
+  const { success, data, error } = validateWithSchema(getDirectorySchema, {
+    id: _id,
+  });
 
   if (!success) {
     return errorResponse(res, error, 400);
@@ -34,33 +36,39 @@ export const getDirectory = async (req, res) => {
     .lean();
 
   if (!directoryData) {
-    return errorResponse(res, "Directory not found or you do not have access to it!", 404);
+    return errorResponse(
+      res,
+      "Directory not found or you do not have access to it!",
+      404
+    );
   }
 
   const files = await File.find({ parentDirId: directoryData._id }).lean();
   const directories = await Directory.find({ parentDirId: _id }).lean();
-  
+
   // Recursive function to count all nested files and folders
   async function getRecursiveCounts(dirId) {
     const filesInDir = await File.find({ parentDirId: dirId }).lean();
     const subdirsInDir = await Directory.find({ parentDirId: dirId }).lean();
-    
+
     let totalFiles = filesInDir.length;
     let totalFolders = subdirsInDir.length;
-    
+
     // Recursively count in each subdirectory
     for (const subdir of subdirsInDir) {
       const counts = await getRecursiveCounts(subdir._id);
       totalFiles += counts.totalFiles;
       totalFolders += counts.totalFolders;
     }
-    
+
     return { totalFiles, totalFolders };
   }
-  
+
   // Get recursive counts for this directory
-  const { totalFiles, totalFolders } = await getRecursiveCounts(directoryData._id);
-  
+  const { totalFiles, totalFolders } = await getRecursiveCounts(
+    directoryData._id
+  );
+
   return successResponse(res, {
     ...directoryData,
     files: files.map((dir) => ({ ...dir, id: dir._id })),
@@ -93,8 +101,8 @@ export const createDirectory = async (req, res, next) => {
     if (!parentDir)
       return errorResponse(res, "Parent Directory Does not exist!", 404);
 
-     const newPath = [...(parentDir.path || []), parentDir._id];
-     
+    const newPath = [...(parentDir.path || []), parentDir._id];
+
     await Directory.create({
       name: dirname,
       parentDirId,
@@ -105,7 +113,11 @@ export const createDirectory = async (req, res, next) => {
     return successResponse(res, null, "Directory Created!", 201);
   } catch (err) {
     if (err.code === 121) {
-      return errorResponse(res, "Invalid input, please enter valid details", 400);
+      return errorResponse(
+        res,
+        "Invalid input, please enter valid details",
+        400
+      );
     } else {
       next(err);
     }
@@ -181,11 +193,12 @@ export const deleteDirectory = async (req, res, next) => {
 
     const { files, directories } = await getDirectoryContents(dirId);
 
-    const keys = files.map(({_id, extension}) => ({Key:`${_id}${extension}`}))
+    const keys = files.map(({ _id, extension }) => ({
+      Key: `${_id}${extension}`,
+    }));
 
-    console.log(keys);
+    if (keys.length) await deletes3Files(keys);
 
-    await deletes3Files(keys);
     await File.deleteMany({
       _id: { $in: files.map(({ _id }) => _id) },
     });
@@ -195,7 +208,7 @@ export const deleteDirectory = async (req, res, next) => {
     });
 
     await updateDirectorySize(directoryData.parentDirId, -directoryData.size);
-    
+
     return successResponse(res, null, "Files deleted successfully");
   } catch (err) {
     console.log(err);
