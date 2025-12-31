@@ -42,9 +42,17 @@ app.use(
   })
 );
 
+const whitelist = [process.env.CLIENT_ORIGIN, process.env.CLIENT_ORIGIN_1]
+
 app.use(
   cors({
-    origin: clientOrigin,
+    origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
     credentials: true,
   })
 );
