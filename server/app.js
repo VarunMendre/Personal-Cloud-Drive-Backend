@@ -14,6 +14,7 @@ import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
+import { initializeRedisindex } from "./utils/authUtils.js";
 
 const mySecretKey = process.env.MY_SECRET_KEY;
 
@@ -42,17 +43,9 @@ app.use(
   })
 );
 
-const whitelist = [process.env.CLIENT_ORIGIN, process.env.CLIENT_ORIGIN_1]
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
+    origin: clientOrigin,
     credentials: true,
   })
 );
@@ -94,7 +87,8 @@ app.use((err, req, res, next) => {
   res.status(status).json({ status, message });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async() => {
+  await initializeRedisindex();
   startCronJobs();
   console.log(`Server Started on port ${PORT}`);
 });
