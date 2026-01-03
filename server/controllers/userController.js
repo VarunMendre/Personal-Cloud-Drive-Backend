@@ -392,7 +392,7 @@ export const hardDeleteUser = async (req, res, next) => {
     await runInTransaction(async (session) => {
       const user = await User.findById(userId).session(session);
       if (!user) {
-        throw { statusCode: 404, message: "User not found" };
+        throw { statusCode: 404, message: "User not found" }
       }
 
       const files = await File.find({ userId }).select("_id extension").lean();
