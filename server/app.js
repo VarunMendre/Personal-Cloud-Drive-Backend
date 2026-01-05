@@ -11,12 +11,12 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
-import crypto from "crypto";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
 import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
+import { gitHubWebhook } from "./utils/gitHubWebhook.js";
 
 const mySecretKey = process.env.MY_SECRET_KEY;
 
@@ -81,26 +81,8 @@ app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
-app.post("/github-webhook", (req, res, next) => {
-  const gitHubSignature = req.headers["x-hub-signature-256"];
-	console.log(gitHubSignature);
-  if (!gitHubSignature) {
-    return res.status(403).json({ message: "Invalid Signature" });
-  }
-  const mySignature =
-    "sha256=" +
-    crypto
-      .createHmac("SHA-256", "varun@0404")
-      .update(JSON.stringify(req.body))
-      .digest("hex");
-	console.log(mySignature);
-  if (gitHubSignature !== mySignature) {
-    return res
-      .status(403)
-      .json({ message: "Invalid GitHub Signature to trigger webhook" });
-  }
-  res.json({ message: "OK" });
-  console.log(req.headers);
+
+app.post("/github-webhook", gitHubWebhook,(req, res, next) => {
   const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
 
   bashChildProcess.stdout.on("data", (data) => {
