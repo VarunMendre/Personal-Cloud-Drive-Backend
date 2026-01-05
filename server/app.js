@@ -85,7 +85,7 @@ app.post("/github-webhook", (req, res, next) => {
   const gitHubSignature = req.headers["x-hub-signature-256"];
   if (!gitHubSignature) {
     return res.status(403).json({ message: "Invalid Signature" });
-  }``
+  }
   const mySignature =
     "sha256" +
     crypto
