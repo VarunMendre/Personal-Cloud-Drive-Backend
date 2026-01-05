@@ -11,6 +11,7 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
+import crypto from "crypto";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
 import { connectDB } from "./config/db.js";
@@ -48,18 +49,17 @@ app.use(
   })
 );
 
-
-const whitelist = ['https://cloudvault.cloud', 'https://www.cloudvault.cloud']
+const whitelist = ["https://cloudvault.cloud", "https://www.cloudvault.cloud"];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  },
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -82,7 +82,23 @@ app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 app.post("/github-webhook", (req, res, next) => {
+  const gitHubSignature = req.headers["x-hub-signature-256"];
+  if (!gitHubSignature) {
+    return res.status(403).json({ message: "Invalid Signature" });
+  }``
+  const mySignature =
+    "sha256" +
+    crypto
+      .createHmac("SHA-256", process.env.GITHUB_WEBHOOK_SECRET)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
 
+  if (gitHubSignature !== mySignature) {
+    return res
+      .status(403)
+      .json({ message: "Invalid GitHub Signature to trigger webhook" });
+  }
+  res.json({ message: "OK" });
   console.log(req.headers);
   const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
 
@@ -94,7 +110,6 @@ app.post("/github-webhook", (req, res, next) => {
     if (!code) {
       console.log(`We get exit code as : ${code}`);
       console.log("Script executed Successfully");
-      res.json({message: "OK"})
     } else {
       console.log("Script failed..");
     }
