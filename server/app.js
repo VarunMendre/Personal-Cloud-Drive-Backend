@@ -11,6 +11,7 @@ import webhookRoutes from "./routes/webhookRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
+import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
 import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
@@ -26,10 +27,14 @@ const PORT = process.env.PORT || 4000;
 app.set("trust proxy", 1);
 
 if (!process.env.MY_SECRET_KEY) {
-  console.error("CRITICAL: MY_SECRET_KEY is not defined in environment variables!");
+  console.error(
+    "CRITICAL: MY_SECRET_KEY is not defined in environment variables!"
+  );
 }
 
-app.use(cookieParser(process.env.MY_SECRET_KEY || "fallback_secret_for_local_only"));
+app.use(
+  cookieParser(process.env.MY_SECRET_KEY || "fallback_secret_for_local_only")
+);
 app.use(express.json());
 const clientOrigin = process.env.CLIENT_ORIGIN?.replace(/\/$/, "");
 
@@ -67,10 +72,37 @@ app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
+app.post("/github-webhook", (req, res, next) => {
+
+
+  const bashChildProcess = spawn("bash", ["/home/ubuntu/Personal-Cloud-Drive-Backend-PM2/server/deploy-backend.sh"]);
+
+  bashChildProcess.stdout.on("data", (data) => {
+    process.stdout.write(data);
+  });
+
+  bashChildProcess.on("close", (code) => {
+    if (!code) {
+      console.log(`We get exit code as : ${code}`);
+      console.log("Script executed Successfully");
+    } else {
+      console.log("Script failed..");
+    }
+  });
+
+  bashChildProcess.stderr.on("data", (data) => {
+    process.stderr.write(data);
+  });
+
+  bashChildProcess.on("error", (err) => {
+    console.log("error while swapping the process");
+    console.log(err);
+  });
+});
 // Testing rotes for AWS EC2
 app.get("/", (req, res) => {
-	res.json({message: "Backend is Live from AWS"});
-})
+  res.json({ message: "Backend is Live from AWS" });
+});
 
 // Checking how pm2 not restarts the with npm command
 
@@ -79,7 +111,6 @@ app.get("/err", (req, res) => {
   process.exit(1);
 });
 
-
 app.use((err, req, res, next) => {
   console.error(err);
   const status = err.status || 500;
@@ -87,7 +118,7 @@ app.use((err, req, res, next) => {
   res.status(status).json({ status, message });
 });
 
-app.listen(PORT, async() => {
+app.listen(PORT, async () => {
   await initializeRedisindex();
   startCronJobs();
   console.log(`Server Started on port ${PORT}`);
