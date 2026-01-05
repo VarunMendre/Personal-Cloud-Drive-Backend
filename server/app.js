@@ -75,8 +75,7 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 app.post("/github-webhook", (req, res, next) => {
 
   console.log(req.headers);
-  console.log(req.body);
-  const bashChildProcess = spawn("bash", ["/home/ubuntu/Personal-Cloud-Drive-Backend-PM2/server/deploy-frontend.sh"]);
+  const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
 
   bashChildProcess.stdout.on("data", (data) => {
     process.stdout.write(data);
