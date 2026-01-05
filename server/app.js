@@ -82,7 +82,7 @@ app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 app.post("/github-webhook", (req, res, next) => {
-  const gitHubSignature = req.headers["x-hub-signature-256"];
+  const gitHubSignature = req.headers["x-Hub-Signature-256"];
   if (!gitHubSignature) {
     return res.status(403).json({ message: "Invalid Signature" });
   }
