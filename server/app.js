@@ -85,6 +85,7 @@ app.post("/github-webhook", (req, res, next) => {
     if (!code) {
       console.log(`We get exit code as : ${code}`);
       console.log("Script executed Successfully");
+      res.json({message: "OK"})
     } else {
       console.log("Script failed..");
     }
