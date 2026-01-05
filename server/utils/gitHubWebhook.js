@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-export const gitHubWebhook = async () => {
+export const gitHubWebhook = async (req, res, next) => {
   const originalSignature = req.headers["x-hub-signature-256"];
   if (!originalSignature) {
     return res.status(401).json({ message: "Invalid Signature" });
@@ -8,7 +8,7 @@ export const gitHubWebhook = async () => {
   const generatedSignature =
     "sha256=" +
     crypto
-      .createHmac("SHA-256", process.env.GITHUB_WEBHOOK_SECRET)
+      .createHmac("SHA-256", "varun@0404")
       .update(JSON.stringify(req.body))
       .digest("hex");
 
@@ -24,4 +24,6 @@ export const gitHubWebhook = async () => {
   }
 
   res.json({ message: "OK" });
+
+	next();
 };
