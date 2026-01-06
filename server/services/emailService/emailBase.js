@@ -69,9 +69,15 @@ export const sendEmail = async ({ to, subject, html, text }) => {
       html,
       text: text || subject,
     });
+    
+    if (data.error) {
+      console.error("Resend API Error details:", data.error);
+      return { success: false, error: data.error };
+    }
+
     return { success: true, data };
   } catch (error) {
-    console.error("Resend Email Error:", error);
+    console.error("Resend Exception:", error);
     return { success: false, error };
   }
 };

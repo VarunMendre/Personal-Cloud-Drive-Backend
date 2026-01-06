@@ -1,66 +1,63 @@
-import crypto from "crypto";
-import { WebhookEventHandler } from "../services/webhookevents/index.js";
-import Webhook from "../models/rzpwebhookModel.js";
+import { spawn } from "child_process";
+import { sendDeploymentEmail } from "../services/emailService/deploymentEmail.js";
 
-export const handleRazorpayWebhook = async (req, res) => {
-  const razorpaySignature = req.headers["x-razorpay-signature"];
-
-  if (!razorpaySignature) {
-    return res.status(400).json({ message: "Signature missing" });
+/**
+ * Handle GitHub webhook for automated deployments
+ */
+export const handleGitHubWebhook = async (req, res) => {
+  const { repository: repoInfo, ref, head_commit: commit, pusher } = req.body;
+  
+  let repository;
+  if (repoInfo?.name === "Personal-Cloud-Drive-Frontend") {
+    repository = "frontend";
+  } else if (repoInfo?.name === "Personal-Cloud-Drive-Backend-PM2") {
+    repository = "backend";
+  } else {
+    return res.status(200).json({ message: "Unknown repository, skipping deploy" });
   }
 
-  const mySignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-    .update(JSON.stringify(req.body))
-    .digest("hex");
+  console.log(`[CI/CD] Starting deployment for: ${repository}`);
 
-  if (razorpaySignature !== mySignature) {
-    return res.status(400).json({ message: "Invalid signature" });
-  }
+  const branch = ref ? ref.split("/").pop() : "unknown";
+  const repoName = repoInfo?.full_name || "CloudVault Repository";
+  const modifiedFiles = commit?.modified || [];
+  const pusherName = pusher?.name || "GitHub Actions";
 
-  // Extract entity dynamically
-  const entityType = Object.keys(req.body.payload)[0];
-  const entity = req.body.payload[entityType]?.entity || {};
+  // Start deployment script
+  const scriptPath = `/home/ubuntu/deploy-${repository}.sh`;
+  const bashProcess = spawn("bash", [scriptPath]);
 
-  // Log webhook as pending
-  let webhookRecord;
-  try {
-    webhookRecord = await Webhook.create({
-      eventType: req.body.event,
-      signature: razorpaySignature,
-      payload: req.body,
-      userId: entity.notes?.userId || null,
-      razorpaySubscriptionId: entity.id || entity.subscription_id || null,
-      status: "pending",
-    });
-  } catch (err) {
-    console.error("Webhook logging failed:", err.message);
-  }
+  bashProcess.stdout.on("data", (data) => process.stdout.write(data));
+  bashProcess.stderr.on("data", (data) => process.stderr.write(data));
 
-  try {
-    // Process the event
-    await WebhookEventHandler(req.body.event, req.body);
+  bashProcess.on("close", async (code) => {
+    const status = code === 0 ? "Success" : "Failed";
+    console.log(`[CI/CD] Deployment ${status} (Exit Code: ${code})`);
 
-    // Update log -> Success
-    if (webhookRecord) {
-      await Webhook.findByIdAndUpdate(webhookRecord._id, {
-        status: "processed",
-        responseMessage: "Success",
-        processedAt: new Date(),
+    try {
+      const result = await sendDeploymentEmail({
+        status,
+        repository,
+        repoName,
+        branch,
+        commit: commit || {},
+        modifiedFiles,
+        pusher: pusherName,
       });
-    }
-  } catch (error) {
-    console.error("Webhook processing error:", error.message);
 
-    // Update log -> Failed
-    if (webhookRecord) {
-      await Webhook.findByIdAndUpdate(webhookRecord._id, {
-        status: "failed",
-        responseMessage: error.message || "Processing failed",
-        processedAt: new Date(),
-      });
+      if (result.success) {
+        console.log(`[CI/CD] Notification email sent for ${repository}`);
+      } else {
+        console.error(`[CI/CD] Failed to send notification email:`, result.error);
+      }
+    } catch (error) {
+      console.error("[CI/CD] Critical error in notification flow:", error);
     }
-  }
+  });
 
-  res.status(200).end("OK");
+  bashProcess.on("error", (err) => {
+    console.error(`[CI/CD] Failed to start process: ${err.message}`);
+  });
+
+  res.status(202).json({ message: "Deployment initiated" });
 };

@@ -23,7 +23,5 @@ export const gitHubWebhook = async (req, res, next) => {
     return res.status(401).send("Invalid Signature");
   }
 
-  res.json({ message: "OK" });
-
-	next();
+  next();
 };
