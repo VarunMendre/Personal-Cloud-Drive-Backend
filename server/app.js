@@ -17,6 +17,7 @@ import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
+import { sendDeploymentEmail } from "./services/emailService/deploymentEmail.js";
 
 const mySecretKey = process.env.MY_SECRET_KEY;
 
@@ -96,6 +97,13 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
 
   console.log("Deploying:", repository);
 
+  // Extract metadata for email
+  const branch = req.body.ref ? req.body.ref.split("/").pop() : "unknown";
+  const commit = req.body.head_commit || {};
+  const repoName = req.body.repository?.full_name || "CloudVault Repository";
+  const modifiedFiles = commit.modified || [];
+  const pusher = req.body.pusher?.name || "GitHub Actions";
+
   const bashChildProcess = spawn("bash", [
     `/home/ubuntu/deploy-${repository}.sh`,
   ]);
@@ -105,12 +113,30 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
     process.stdout.write(data);
   });
 
-  bashChildProcess.on("close", (code) => {
+  bashChildProcess.on("close", async (code) => {
+    const status = code === 0 ? "Success" : "Failed";
+
     if (!code) {
       console.log(`We get exit code as : ${code}`);
       console.log("Script executed Successfully");
     } else {
       console.log("Script failed..");
+    }
+
+    // Send deployment notification email
+    try {
+      await sendDeploymentEmail({
+        status,
+        repository,
+        repoName,
+        branch,
+        commit,
+        modifiedFiles,
+        pusher,
+      });
+      console.log(`Deployment email sent for ${repository} with status: ${status}`);
+    } catch (emailError) {
+      console.error("Failed to send deployment email:", emailError);
     }
   });
 
@@ -122,6 +148,8 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
     console.log("error while swapping the process");
     console.log(err);
   });
+
+  res.status(202).json({ message: "Deployment started" });
 });
 // Testing rotes for AWS EC2
 app.get("/", (req, res) => {
