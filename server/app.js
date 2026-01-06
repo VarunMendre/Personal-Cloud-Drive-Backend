@@ -81,14 +81,16 @@ app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
-
-app.post("/github-webhook", gitHubWebhook,(req, res, next) => {
+app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
+  let repository;
   if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
-    const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
+    repository = "frontend";
   } else {
-    const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-backend.sh"]);
+    repository = "backend";
   }
-  
+  console.log({repository});
+  const bashChildProcess = spawn("bash", [`/home/ubuntu/deploy-${repository}.sh`]);
+
   bashChildProcess.stdout.on("data", (data) => {
     process.stdout.write(data);
   });
