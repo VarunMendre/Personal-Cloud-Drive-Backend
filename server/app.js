@@ -85,7 +85,7 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
   let repository;
   if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
     repository = "frontend";
-  } else {
+  } else if (req, body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
     repository = "backend";
   }
   console.log({repository});
