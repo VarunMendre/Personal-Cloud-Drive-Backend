@@ -83,7 +83,7 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
   let repository;
-  
+
   if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
     repository = "frontend";
   } else if (req.body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
@@ -95,7 +95,11 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
   }
 
   console.log("Deploying:", repository);
-  const bashChildProcess = spawn("bash", [`/home/ubuntu/deploy-${repository}.sh`]);
+
+  const bashChildProcess = spawn("bash", [
+    `/home/ubuntu/deploy-${repository}.sh`,
+  ]);
+
 
   bashChildProcess.stdout.on("data", (data) => {
     process.stdout.write(data);
