@@ -8,7 +8,7 @@ export const gitHubWebhook = async (req, res, next) => {
   const generatedSignature =
     "sha256=" +
     crypto
-      .createHmac("SHA-256", "varun@0404")
+      .createHmac("SHA-256", process.env.GITHUB_WEBHOOK_SECRET)
       .update(JSON.stringify(req.body))
       .digest("hex");
 
