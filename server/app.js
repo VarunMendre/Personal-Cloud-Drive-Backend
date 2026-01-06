@@ -17,7 +17,6 @@ import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
-import { handleGitHubWebhook } from "./controllers/webhookController.js";
 
 const mySecretKey = process.env.MY_SECRET_KEY;
 
@@ -82,7 +81,48 @@ app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
-app.post("/github-webhook", gitHubWebhook, handleGitHubWebhook);
+app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
+  let repository;
+
+  if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
+    repository = "frontend";
+  } else if (req.body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
+    repository = "backend";
+  } else {
+    return res
+      .status(200)
+      .json({ message: "Unknown repository, skipping deploy" });
+  }
+
+  console.log("Deploying:", repository);
+
+  const bashChildProcess = spawn("bash", [
+    `/home/ubuntu/deploy-${repository}.sh`,
+  ]);
+
+
+  bashChildProcess.stdout.on("data", (data) => {
+    process.stdout.write(data);
+  });
+
+  bashChildProcess.on("close", (code) => {
+    if (!code) {
+      console.log(`We get exit code as : ${code}`);
+      console.log("Script executed Successfully");
+    } else {
+      console.log("Script failed..");
+    }
+  });
+
+  bashChildProcess.stderr.on("data", (data) => {
+    process.stderr.write(data);
+  });
+
+  bashChildProcess.on("error", (err) => {
+    console.log("error while swapping the process");
+    console.log(err);
+  });
+});
 // Testing rotes for AWS EC2
 app.get("/", (req, res) => {
   res.json({ message: "Backend is Live from AWS" });
