@@ -83,12 +83,18 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
   let repository;
+  
   if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
     repository = "frontend";
-  } else if (req, body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
+  } else if (req.body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
     repository = "backend";
+  } else {
+    return res
+      .status(200)
+      .json({ message: "Unknown repository, skipping deploy" });
   }
-  console.log({repository});
+
+  console.log("Deploying:", repository);
   const bashChildProcess = spawn("bash", [`/home/ubuntu/deploy-${repository}.sh`]);
 
   bashChildProcess.stdout.on("data", (data) => {
