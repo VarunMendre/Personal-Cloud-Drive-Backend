@@ -83,8 +83,12 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 
 app.post("/github-webhook", gitHubWebhook,(req, res, next) => {
-  const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
-
+  if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
+    const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-frontend.sh"]);
+  } else {
+    const bashChildProcess = spawn("bash", ["/home/ubuntu/deploy-backend.sh"]);
+  }
+  
   bashChildProcess.stdout.on("data", (data) => {
     process.stdout.write(data);
   });
