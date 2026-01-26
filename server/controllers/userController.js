@@ -65,7 +65,7 @@ export const register = async (req, res, next) => {
 
     return successResponse(res, null, "User Registered", 201);
   } catch (err) {
-    console.log(err);
+
     if (err.code === 121) {
       return errorResponse(res, "Invalid input, please enter valid details", 400);
     } else if (err.code === 11000) {
@@ -542,7 +542,7 @@ export const deleteUserFiles = async (req, res, next) => {
     if (!file) {
       return errorResponse(res, "File not found", 404);
     }
-    console.log("File deleted:", file);
+
 
     return successResponse(res, null, "File deleted successfully");
   } catch (err) {

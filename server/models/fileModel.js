@@ -1,6 +1,6 @@
 // models/File.js
 import { model, Schema } from "mongoose";
-import { number } from "zod";
+
 
 const fileSchema = new Schema(
   {
@@ -76,7 +76,7 @@ const fileSchema = new Schema(
   }
 );
 
-// to check if user has access
+// To check if user has access
 fileSchema.methods.hasAccess = function (userId, requiredRole = "viewer") {
   if (this.userId.toString() === userId.toString()) {
     return true;
@@ -97,7 +97,7 @@ fileSchema.methods.hasAccess = function (userId, requiredRole = "viewer") {
   return false;
 };
 
-//  to get user's role
+// To get user's role
 fileSchema.methods.getUserRole = function (userId) {
   if (this.userId.toString() === userId.toString()) {
     return "owner";

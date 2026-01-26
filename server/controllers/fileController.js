@@ -113,7 +113,7 @@ export const renameFile = async (req, res, next) => {
     await file.save();
     return successResponse(res, null, "Renamed");
   } catch (err) {
-    console.log(err);
+
     err.status = 500;
     next(err);
   }
@@ -278,7 +278,7 @@ export const completeFileUpload = async (req, res, next) => {
 
     return successResponse(res, { size: resultFileSize });
   } catch (err) {
-    console.log(err);
+
     return errorResponse(res, "Failed to verify file", 500);
   }
 };

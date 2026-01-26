@@ -18,7 +18,7 @@ export const createSubscription = async (req, res, next) => {
     const result = await createSubscriptionService(req.user._id, planId);
     return successResponse(res, result);
   } catch (error) {
-    console.log("Error creating subscription:", error);
+
     return errorResponse(res, error.message, error.status || 500);
   }
 };
@@ -33,7 +33,7 @@ export const getSubscriptionDetails = async (req, res, next) => {
 
     return successResponse(res, details);
   } catch (error) {
-    console.log("Error getting subscription details:", error);
+
     next(error);
   }
 };
@@ -67,7 +67,7 @@ export const getSubscriptionInvoice = async (req, res, next) => {
 
     return successResponse(res, { invoiceUrl: lastInvoice.short_url });
   } catch (error) {
-    console.error("Error fetching invoice:", error);
+
     next(error);
   }
 };
@@ -83,7 +83,7 @@ export const cancelSubscription = async (req, res, next) => {
 
     return successResponse(res, result);
   } catch (error) {
-    console.error("Error while canceling subscription", error);
+
     next(error);
   }
 };
@@ -94,7 +94,7 @@ export const pauseSubscription = async (req, res, next) => {
     const result = await pauseSubscriptionService(id);
     return successResponse(res, result);
   } catch (error) {
-    console.error("Error pausing subscription:", error);
+
     next(error);
   }
 };
@@ -105,7 +105,7 @@ export const resumeSubscription = async (req, res, next) => {
     const result = await resumeSubscriptionService(id);
     return successResponse(res, result);
   } catch (error) {
-    console.error("Error resuming subscription:", error);
+
     next(error);
   }
 };
@@ -130,7 +130,7 @@ export const checkSubscriptionStatus = async (req, res, next) => {
 
     return successResponse(res, { active: false });
   } catch (error) {
-    console.error("Error checking subscription status:", error);
+
     next(error);
   }
 };
@@ -150,7 +150,7 @@ export const changePlan = async (req, res, next) => {
     const result = await changePlanService(req.user._id, planId);
     return successResponse(res, result);
   } catch (error) {
-    console.error("Error changing plan:", error);
+
     next(error);
   }
 }

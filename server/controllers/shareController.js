@@ -38,8 +38,6 @@ export const getSharedUsers = async (req, res) => {
       return errorResponse(res, "Unauthorized", 403);
     }
 
-    console.log("DEBUG: getSharedUsers returning shareLink:", resource.shareLink ? "FOUND" : "NULL", resource.shareLink);
-
     return successResponse(res, {
       owner: resource.userId,
       sharedWith: resource.sharedWith.map((s) => ({
@@ -104,10 +102,8 @@ export const shareWithUser = async (req, res) => {
       );
 
       if (existingShare) {
-        console.log(`Updating existing share for user ${userTOShare._id}`);
         existingShare.role = role;
       } else {
-        console.log(`Adding new share for user ${userTOShare._id}`);
         resource.sharedWith.push({
           userId: userTOShare._id,
           role: role,
@@ -292,7 +288,6 @@ export const disableShareLink = async (req, res) => {
 export const getDashboardStats = async (req, res) => {
   try {
     const currentUserId = req.user._id;
-    console.log("DEBUG: Getting dashboard stats for:", currentUserId);
 
     // 1. Shared With Me (Counts)
     const sharedWithMeCount = await File.countDocuments({
@@ -340,8 +335,6 @@ export const getDashboardStats = async (req, res) => {
       collaborators: collaborators.size,
     };
 
-    console.log("DEBUG: Dashboard Stats calculated:", stats);
-
     res.json(stats);
   } catch (err) {
     console.error("Dashboard Stats Error:", err);
@@ -379,29 +372,13 @@ export const getRecentActivity = async (req, res) => {
 export const getSharedWithMe = async (req, res) => {
   try {
     const currentUserId = req.user._id;
-    console.log(
-      "DEBUG: Fetching shared with me. Current User ID:",
-      currentUserId
-    );
 
     // 1. Find Files
-    console.log("DEBUG: Querying Files with:", {
-      "sharedWith.userId": currentUserId,
-    });
-
     const sharedFiles = await File.find({
       "sharedWith.userId": currentUserId,
     })
       .populate("userId", "name email picture")
       .lean();
-
-    console.log("DEBUG: Raw Files Found:", sharedFiles.length);
-    if (sharedFiles.length > 0) {
-      console.log(
-        "DEBUG: First file sharedWith:",
-        JSON.stringify(sharedFiles[0].sharedWith)
-      );
-    }
 
     // 2. Find Folders
     const sharedFolders = await Directory.find({
@@ -410,25 +387,12 @@ export const getSharedWithMe = async (req, res) => {
       .populate("userId", "name email picture")
       .lean();
 
-    console.log("DEBUG: Raw Folders Found:", sharedFolders.length);
-
-    console.log(
-      `Found ${sharedFiles.length} files and ${sharedFolders.length} folders`
-    );
-
     // 3. Format Files for Frontend
     const formattedFiles = sharedFiles.map((file) => {
       // find the specific share object for this user to get their role/sharedAt
       const myShare = file.sharedWith.find(
         (s) => s.userId.toString() === currentUserId.toString()
       );
-
-      // Debug if myShare is missing but file was found (should not happen normally)
-      if (!myShare)
-        console.log(
-          "WARN: Share object not found in array for file:",
-          file._id
-        );
 
       return {
         fileId: file._id,

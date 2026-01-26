@@ -19,7 +19,7 @@ import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
 
-const mySecretKey = process.env.MY_SECRET_KEY;
+
 
 connectDB();
 
@@ -124,12 +124,10 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
     console.log(err);
   });
 });
-// Testing rotes for AWS EC2
+// Health check route
 app.get("/", (req, res) => {
   res.json({ message: "Storage App Backend is Live & Deployed Successfully by Custom CI-CD server..." });
 });
-
-// Checking how pm2 not restarts the with npm command
 
 app.get("/err", (req, res) => {
   console.log("Process exited with error");
