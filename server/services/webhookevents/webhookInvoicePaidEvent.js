@@ -42,7 +42,7 @@ export const handleInvoicePaidEvent = async (webhookBody) => {
 
     const isFirstPayment = !existingSub || existingSub.status === "created" || !existingSub.invoiceId;
 
-    console.log(`[InvoicePaid] Sub: ${newSubId}, isFirstPayment: ${isFirstPayment}, Has Migration: ${!!oldSubId}`);
+
 
     // 3. Handle first payment (upgrade payment)
     if (isFirstPayment) {
@@ -112,23 +112,18 @@ export const handleInvoicePaidEvent = async (webhookBody) => {
         }
       }
 
-      console.log(
-        `First payment processed: ${newSubId}, Bonus: ${bonusDays} days`
-      );
+      console.log(`[Subscription] First payment processed: ${newSubId}`);
     }
 
-    // 4. Handel second payment (after first 30-day cycle
+    // 4. Handle second payment (after first 30-day cycle)
     else if (existingSub.status === "active" && bonusDays > 0) {
       // Payment succeeded, start authenticated trial
-
       const trialStart = new Date();
       const trialEnd = new Date(trialStart);
       trialEnd.setDate(trialEnd.getDate() + bonusDays);
 
       await Subscription.findOneAndUpdate(
-        {
-          razorpaySubscriptionId: newSubId,
-        },
+        { razorpaySubscriptionId: newSubId },
         {
           status: "authenticated",
           authenticatedPeriodStart: trialStart,
@@ -136,9 +131,7 @@ export const handleInvoicePaidEvent = async (webhookBody) => {
         }
       );
 
-      console.log(
-        `Started authenticated trial: ${newSubId}, ${bonusDays} days`
-      );
+      console.log(`[Subscription] Started authenticated trial: ${newSubId}`);
     }
 
     return { success: true };

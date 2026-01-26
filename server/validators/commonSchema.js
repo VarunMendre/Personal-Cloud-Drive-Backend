@@ -7,9 +7,7 @@ export const objectIdSchema = z
     message: "Invalid ObjectId",
   });
 
-export const stringSchema = z.string({
-  name: z.string().min(5, "Should contain at least 5 characters").max(100),
-});
+export const stringSchema = z.string().min(1, "Field cannot be empty");
 
 export const filenameSchema = z
   .string()

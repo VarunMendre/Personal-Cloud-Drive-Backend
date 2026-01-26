@@ -1,4 +1,4 @@
-// TASK : Store all webhook events in a collection named 'webhooks'
+
 
 import express from "express";
 import { handleRazorpayWebhook } from "../controllers/webhookController.js";

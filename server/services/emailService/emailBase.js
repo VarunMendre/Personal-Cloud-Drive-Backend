@@ -1,8 +1,7 @@
 import { Resend } from "resend";
 
-// Initialize Resend with the provided key (should ideally be from process.env in production)
 // Initialize Resend with the provided key
-const resend = new Resend(process.env.OTP_RESEND_KEY || process.env.RESEND_API_KEY || "re_Q6KEKoDn_Gveb78JtUkTzZWzQ3krp2E2k");
+const resend = new Resend(process.env.RESEND_API_KEY || process.env.OTP_RESEND_KEY);
 
 /**
  * Wraps content in a standard HTML email template

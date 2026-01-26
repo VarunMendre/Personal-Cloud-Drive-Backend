@@ -1,7 +1,7 @@
 import express from "express";
 import checkAuth, { checkUploadAccess } from "../middlewares/authMiddleware.js";
 import {
-    disableShareLink,
+  disableShareLink,
   generateShareLink,
   getCollaborators,
   getDashboardStats,
@@ -25,7 +25,7 @@ router.get("/shared-with-me", checkAuth, getSharedWithMe);
 router.get("/shared-by-me", checkAuth, getSharedByMe);
 router.get("/collaborators", checkAuth, getCollaborators);
 
-// Resource sharring routes
+// Resource sharing routes
 
 router.get(
   "/:resourceType/:resourceId/shared-users",
@@ -60,10 +60,10 @@ router.patch(
   updateShareLink
 );
 router.delete(
-    "/:resourceType/:resourceId/share-link",
-    checkAuth,
-    checkUploadAccess,
-    disableShareLink
+  "/:resourceType/:resourceId/share-link",
+  checkAuth,
+  checkUploadAccess,
+  disableShareLink
 );
 
 

@@ -4,23 +4,12 @@ import { processAuthenticatedTrials } from "./authenticatedTrialProcessor.js";
 import { cleanupOrphanedUploads } from "./cleanupUploads.js";
 
 export const startCronJobs = () => {
-  console.log(`
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Initializing Cron Jobs
-🕒 Timezone : Asia/Kolkata
-📅 Jobs     : Subscription state processor
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`);
+  console.log("🚀 Initializing Cron Jobs...");
 
-  // removePendingSubscriptionsFromDatabase();
+
   processSubscriptionStates();
 
-  console.log(`
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Cron Jobs registered successfully
-⏱️ Schedulers are active and waiting
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`);
+  console.log("✅ Cron Jobs registered successfully.");
 
   cron.schedule("0 * * * *", async () => {
     console.log("Running authenticated trial processor...");

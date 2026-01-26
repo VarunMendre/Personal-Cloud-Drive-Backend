@@ -20,9 +20,7 @@ export const processAuthenticatedTrials = async () => {
         authenticatedPeriodStart: null,
         authenticatedPeriodEnd: null,
       });
-      console.log(
-        `Trial expired, started second cycle: ${sub.razorpaySubscriptionId}`
-      );
+      console.log(`[Subscription] Trial expired, started second cycle: ${sub.razorpaySubscriptionId}`);
     }
     return { processed: expiredTrials.length };
   } catch (error) {

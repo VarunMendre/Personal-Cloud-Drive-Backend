@@ -8,18 +8,14 @@ export const initializeRedisindex = async () => {
   try {
     const allIndexes = await redisClient.ft._list();
 
-    // If index already exists, we might need to drop it to update schema
-    if (allIndexes.includes("userIdInx")) {
-      await redisClient.ft.dropIndex("userIdInx");
-      console.log("Old Redis Search Index 'userIdInx' dropped for schema update");
-    }
+
 
     await redisClient.ft.create("userIdInx", {
       "$.userId": { type: 'TAG', AS: "userId" },
       "$.createdAt": { type: 'NUMERIC', AS: "createdAt", SORTABLE: true },
     }, { ON: "JSON", PREFIX: "session:" });
 
-    console.log("✅ Redis Search Index 'userIdInx' created with createdAt field");
+
   } catch (error) {
     if (!error.message.includes("Index already exists")) {
       console.error("Failed to initialize index:", error);
@@ -109,7 +105,7 @@ export const createSession = async (res, user) => {
           
           const sid = oldestSessionId.replace("session:", "");
           await redisClient.set(`eviction:${sid}`, "true", { EX: 600 });
-          console.log(`[DeviceLimit] Evicted session: ${sid} for user: ${userId}`);
+
         }
       }
     }
