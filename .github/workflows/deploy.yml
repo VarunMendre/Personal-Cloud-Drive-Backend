@@ -18,8 +18,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            # 1. Go to your backend folder
-            cd /home/ubuntu/stroageApp-backend
+            # 1. Update this to your ACTUAL folder name on EC2
+            cd /home/ubuntu/Personal-Cloud-Drive-Backend-PM2
             
             # 2. Pull the latest code
             git pull origin main
