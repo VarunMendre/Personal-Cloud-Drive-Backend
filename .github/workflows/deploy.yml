@@ -29,7 +29,7 @@ jobs:
             npm ci
             
             # 4. Restart your app with PM2
-            pm2 reload storageApp
+            /usr/local/nodejs/bin/pm2 reload StorageApp
             
             # 5. Reload Nginx
             sudo systemctl reload nginx
