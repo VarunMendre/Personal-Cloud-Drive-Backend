@@ -24,9 +24,15 @@ jobs:
             # 2. Pull the latest code
             git pull origin main
             
-            # 3. Install dependencies (inside the server folder)
-            cd server
-            npm ci
+            # 3. Smart Dependency Update
+            # Checks if package-lock.json changed between the pull
+            if git diff --name-only HEAD@{1} HEAD | grep -q "server/package-lock.json"; then
+              echo "📦 package-lock.json changed. Installing dependencies..."
+              cd server
+              npm ci
+            else
+              echo "⏭️ No dependency changes. Skipping npm ci."
+            fi
             
             # 4. Restart your app with PM2
             /usr/local/nodejs/bin/pm2 reload StorageApp
