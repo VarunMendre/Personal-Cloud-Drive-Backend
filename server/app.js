@@ -14,14 +14,13 @@ import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
-import { connectDB } from "./config/db.js";
 import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
 
 
 
-connectDB();
+
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -142,7 +141,7 @@ app.use((err, req, res, next) => {
 });
 
 
-if (!process.env.LAMDA_TASK_ROOT) {
+if (!process.env.LAMBDA_TASK_ROOT) {
   app.listen(PORT, async () => {
     await initializeRedisindex();
     startCronJobs();
