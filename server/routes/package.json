@@ -27,6 +27,7 @@
     "express-rate-limit": "^8.2.1",
     "google-auth-library": "^10.4.1",
     "helmet": "^8.1.0",
+    "isomorphic-dompurify": "^2.21.0",
     "mongoose": "^8.12.1",
     "razorpay": "^2.9.6",
     "redis": "^5.9.0",
