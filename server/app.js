@@ -14,7 +14,6 @@ import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
-import { startCronJobs } from "./cron-jobs/index.js";
 import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
 
@@ -144,7 +143,6 @@ app.use((err, req, res, next) => {
 if (!process.env.LAMBDA_TASK_ROOT) {
   app.listen(PORT, async () => {
     await initializeRedisindex();
-    startCronJobs();
     console.log(`Server Started on port ${PORT}`);
   });
 }

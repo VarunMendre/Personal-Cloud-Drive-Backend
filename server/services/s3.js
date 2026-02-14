@@ -8,13 +8,12 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-export const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+/**
+ * S3 Client initialization.
+ * In AWS Lambda, the SDK automatically picks up the IAM Role credentials and Region.
+ * For local development, it will look for AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in your .env.
+ */
+export const s3Client = new S3Client({});
 
 export const createUploadSignedUrl = async ({ key, contentType }) => {
   const command = new PutObjectCommand({
