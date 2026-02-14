@@ -141,8 +141,14 @@ app.use((err, req, res, next) => {
   res.status(status).json({ status, message });
 });
 
-app.listen(PORT, async () => {
-  await initializeRedisindex();
-  startCronJobs();
-  console.log(`Server Started on port ${PORT}`);
-});
+
+if (!process.env.LAMDA_TASK_ROOT) {
+  app.listen(PORT, async () => {
+    await initializeRedisindex();
+    startCronJobs();
+    console.log(`Server Started on port ${PORT}`);
+  });
+}
+
+
+export default app;
