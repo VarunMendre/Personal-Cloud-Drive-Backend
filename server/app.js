@@ -124,7 +124,7 @@ app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
 });
 // Health check route
 app.get("/", (req, res) => {
-  res.json({ message: "Storage App Backend is Live & Deployed Successfully by Custom CI-CD server..." });
+  res.json({ message: "Storage App Backend is Live" });
 });
 
 app.get("/err", (req, res) => {
