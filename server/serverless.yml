@@ -1,0 +1,40 @@
+service: StorageApp-Serverless
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-south-1 # CHANGE THIS to your preferred region (e.g., ap-south-1 for Mumbai)
+  memorySize: 512 # Adjust based on your app's needs
+  timeout: 30 # Adjust based on your app's needs
+  httpApi:
+    # We disable CORS here because it's handled in app.js via the 'cors' middleware.
+    # Leaving it 'true' or '*' conflicts with credentials: true.
+    # cors: true 
+
+functions:
+  api:
+    handler: lamda.handler
+    events:
+      - httpApi: '*' # This makes it a catch-all for all routes (GET, POST, etc.)
+
+package:
+  # This ensures we only upload what's necessary to keep the package small
+  patterns:
+    - "!**"
+    - "app.js"
+    - "lamda.js"
+    - "package.json"
+    - "config/**"
+    - "controllers/**"
+    - "middlewares/**"
+    - "models/**"
+    - "routes/**"
+    - "services/**"
+    - "utils/**"
+    - "validators/**"
+    - "node_modules/**"
+    - "package-lock.json"
+    - "!.git/**"
+    - "!.env" # Excluded because you will add variables manually
+    - "!test/**"
+    - "!StorageApp-Serverless/**"

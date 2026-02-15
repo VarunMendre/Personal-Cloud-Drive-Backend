@@ -80,51 +80,9 @@ app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
-app.post("/github-webhook", gitHubWebhook, (req, res, next) => {
-  let repository;
-
-  if (req.body.repository.name === "Personal-Cloud-Drive-Frontend") {
-    repository = "frontend";
-  } else if (req.body.repository.name === "Personal-Cloud-Drive-Backend-PM2") {
-    repository = "backend";
-  } else {
-    return res
-      .status(200)
-      .json({ message: "Unknown repository, skipping deploy" });
-  }
-
-  console.log("Deploying:", repository);
-
-  const bashChildProcess = spawn("bash", [
-    `/home/ubuntu/deploy-${repository}.sh`,
-  ]);
-
-
-  bashChildProcess.stdout.on("data", (data) => {
-    process.stdout.write(data);
-  });
-
-  bashChildProcess.on("close", (code) => {
-    if (!code) {
-      console.log(`We get exit code as : ${code}`);
-      console.log("Script executed Successfully");
-    } else {
-      console.log("Script failed..");
-    }
-  });
-
-  bashChildProcess.stderr.on("data", (data) => {
-    process.stderr.write(data);
-  });
-
-  bashChildProcess.on("error", (err) => {
-    console.log("error while swapping the process");
-    console.log(err);
-  });
-});
 // Health check route
 app.get("/", (req, res) => {
-  res.json({ message: "Storage App Backend is Live" });
+  res.json({ message: "Storage App Backend is Live on Serverless Lambda " });
 });
 
 app.get("/err", (req, res) => {
