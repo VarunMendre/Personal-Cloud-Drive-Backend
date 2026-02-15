@@ -1,7 +1,7 @@
 import { getSignedUrl } from "@aws-sdk/cloudfront-signer";
 
 
-const privateKey = process.env.CLOUDFRONT_PRIVATE_KEY;
+const privateKey = atob(process.env.CLOUDFRONT_PRIVATE_KEY);
 const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const dateLessThan = new Date(Date.now() + 1000 * 60 * 60).toISOString(); // any Date constructor compatible
 
