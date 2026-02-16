@@ -82,7 +82,7 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 
 // Health check route
 app.get("/", (req, res) => {
-  res.json({ message: "Storage App Backend is Live on Serverless Lambda " });
+  res.json({ message: "Storage App Backend is Live on Serverless Lambda & Sent Telegram Notification" });
 });
 
 app.get("/err", (req, res) => {
