@@ -1,5 +1,5 @@
 import { drive as googleDrive } from "@googleapis/drive";
-import { auth } from "google-auth-library";
+import { OAuth2Client } from "google-auth-library"
 import { Upload } from "@aws-sdk/lib-storage";
 import { s3Client } from "./s3.js";
 import Directory from "../models/directoryModel.js";
@@ -27,7 +27,7 @@ export const importFromGoogleDrive = async ({ fileId, accessToken, parentDirId, 
     throw new CustomError("Invalid access token format", 400);
   }
 
-  const oauth2Client = new auth.OAuth2();
+  const oauth2Client = new OAuth2Client();
   oauth2Client.setCredentials({ access_token: accessToken });
 
   const drive = googleDrive({ version: "v3", auth: oauth2Client });
