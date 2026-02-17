@@ -44,12 +44,12 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            🚀 **Backend Deployment Successful!**
+            🚀 Backend Deployment Successful!
             
-            📦 **Repo:** ${{ github.repository }}
-            🌿 **Branch:** ${{ github.ref_name }}
-            📝 **Commit:** ${{ github.event.head_commit.message }}
-            👤 **Author:** ${{ github.actor }}
+            📦 Repo: ${{ github.repository }}
+            🌿 Branch: ${{ github.ref_name }}
+            📝 Commit: ${{ github.event.head_commit.message }}
+            👤 Author: ${{ github.actor }}
             
             ✅ Service is live!
 
@@ -60,8 +60,8 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            🔴 **Backend Deployment FAILED**
+            🔴 Backend Deployment FAILED
             
-            📦 **Repo:** ${{ github.repository }}
-            🌿 **Branch:** ${{ github.ref_name }}
-            ❌ **Error:** Check GitHub Actions logs.
+            📦 Repo: ${{ github.repository }}
+            🌿 Branch: ${{ github.ref_name }}
+            ❌ Error: Check GitHub Actions logs.
