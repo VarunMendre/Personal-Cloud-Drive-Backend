@@ -6,7 +6,7 @@ provider:
   runtime: nodejs20.x
   region: ap-south-1
   memorySize: 512
-  timeout: 30
+  timeout: 60
   environment:
     # Adding essential env vars here ensures both Lambdas have them
     DB_URL: ${env:DB_URL, ""}
@@ -39,12 +39,13 @@ functions:
     handler: lamda.handler
     events:
       - httpApi:
-          path: $default # Catch-all for everything else
+          path: '*' # Catch-all for everything else
           method: '*'
 
   auth:
     handler: auth-lamda.handler
     memorySize: 1024 # More memory for bcrypt operations
+    timeout: 60
     events:
       - httpApi:
           path: /auth/{proxy+}
