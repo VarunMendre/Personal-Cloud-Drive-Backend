@@ -37,8 +37,9 @@ const connectRedis = async () => {
   if (connectingPromise) return connectingPromise;
 
   if (!process.env.REDIS_HOST) {
-    console.warn("Skipping Redis connection: REDIS_HOST is missing");
-    return;
+    const err = new Error("REDIS_HOST environment variable is MISSING!");
+    console.error(err.message);
+    throw err;
   }
 
   connectingPromise = (async () => {

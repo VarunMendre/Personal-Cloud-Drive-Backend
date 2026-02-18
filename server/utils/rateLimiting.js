@@ -32,7 +32,9 @@ const createRateLimiter = ({
             throw new Error("Redis connection unavailable for rate limiting");
           }
         }
-        return redisClient.sendCommand(args);
+        // rate-limit-redis passes the command as a single array argument
+        const commandArgs = Array.isArray(args[0]) ? args[0] : args;
+        return redisClient.sendCommand(commandArgs);
       },
       prefix: "rl:",
     }),
