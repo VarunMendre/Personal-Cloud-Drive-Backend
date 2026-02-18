@@ -25,14 +25,15 @@ const createRateLimiter = ({
     store: new RedisStore({
       sendCommand: async (...args) => {
         if (!redisClient.isOpen) {
-          try {
-            await connectRedis();
-          } catch (err) {
-            console.error("Redis Store sendCommand: Connection failed", err.message);
-            throw new Error("Redis connection unavailable for rate limiting");
-          }
+          // Try to connect if we aren't already
+          await connectRedis().catch(e => console.error("Async Redis connect failed", e.message));
         }
-        // rate-limit-redis passes the command as a single array argument
+        
+        if (!redisClient.isOpen) {
+          console.warn("Redis not open, skipping rate limit command");
+          return null; // Return null so rate-limit-redis doesn't crash
+        }
+        
         const commandArgs = Array.isArray(args[0]) ? args[0] : args;
         return redisClient.sendCommand(commandArgs);
       },

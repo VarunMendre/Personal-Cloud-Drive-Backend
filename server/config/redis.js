@@ -37,9 +37,8 @@ const connectRedis = async () => {
   if (connectingPromise) return connectingPromise;
 
   if (!process.env.REDIS_HOST) {
-    const err = new Error("REDIS_HOST environment variable is MISSING!");
-    console.error(err.message);
-    throw err;
+    console.warn("REDIS_HOST environment variable is MISSING. Redis features will be disabled.");
+    return;
   }
 
   connectingPromise = (async () => {
@@ -47,8 +46,8 @@ const connectRedis = async () => {
       await redisClient.connect();
       console.log("RedisDB connected");
     } catch (err) {
-      console.error("Redis connection failed:", err);
-      throw err; // Re-throw to allow the promise to reflect failure
+      console.error("Redis connection failed:", err.message);
+      // Don't re-throw to prevent Init-phase crashes
     } finally {
       connectingPromise = null;
     }

@@ -1,4 +1,10 @@
 import "dotenv/config.js";
+// Diagnostic: IMMEDIATE Environment Check
+const criticalVars = ['DB_URL', 'REDIS_HOST', 'CLIENT_ORIGIN', 'MY_SECRET_KEY'];
+criticalVars.forEach(v => {
+  if (!process.env[v]) console.error(`CRITICAL STARTUP ERROR: ${v} is not defined!`);
+});
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
