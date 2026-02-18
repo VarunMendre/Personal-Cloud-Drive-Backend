@@ -8,9 +8,9 @@ export async function connectDB() {
     isConnected = mongoose.connection.readyState;
     console.log("Database connected");
   } catch (err) {
-    console.log(err);
+    console.error("DB Connection Error:", err);
     console.log("DB Couldn't connect");
-    process.exit(1);
+    // Removed process.exit(1) for Lambda stability
   }
 }
 

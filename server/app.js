@@ -98,9 +98,11 @@ app.use((err, req, res, next) => {
 });
 
 
+// Initialize Redis Search Index (runs on both Lambda and Local)
+initializeRedisindex().catch(err => console.error("Redis Index Init Error:", err));
+
 if (!process.env.LAMBDA_TASK_ROOT) {
-  app.listen(PORT, async () => {
-    await initializeRedisindex();
+  app.listen(PORT, () => {
     console.log(`Server Started on port ${PORT}`);
   });
 }
