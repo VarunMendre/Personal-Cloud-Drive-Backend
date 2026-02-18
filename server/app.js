@@ -75,8 +75,8 @@ app.use(
 );
 
 // Routes
-app.use("/user", userRoutes);
-app.use("/auth", authRoutes);
+app.use("/", userRoutes); // Contains its own /user prefixes
+app.use("/auth", authRoutes); 
 app.use("/directory", checkAuth, directoryRoutes);
 app.use("/file", checkAuth, fileRoutes);
 app.use("/import", checkAuth, importRoutes);
