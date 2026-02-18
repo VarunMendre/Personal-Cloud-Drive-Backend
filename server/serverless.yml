@@ -43,13 +43,13 @@ functions:
           method: '*'
       - httpApi:
           path: /user
-          method: GET
+          method: '*'
       - httpApi:
           path: /user/profile
           method: '*'
       - httpApi:
           path: /user/profile/picture-upload-url
-          method: GET
+          method: '*'
       - httpApi:
           path: /users/{proxy+}
           method: '*'
@@ -58,10 +58,10 @@ functions:
           method: '*'
       - httpApi:
           path: /list
-          method: GET
+          method: '*'
       - httpApi:
           path: /
-          method: GET
+          method: '*'
 
   auth:
     handler: auth-lamda.handler
@@ -72,25 +72,25 @@ functions:
           method: '*'
       - httpApi:
           path: /user/register
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/login
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/set-password
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/change-password
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/logout
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/logout-all
-          method: POST
+          method: '*'
       - httpApi:
           path: /user/has-password
-          method: GET
+          method: '*'
 
 package:
   # This ensures we only upload what's necessary to keep the package small

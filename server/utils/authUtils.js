@@ -1,11 +1,12 @@
 import crypto from "crypto";
-import redisClient from "../config/redis.js";
+import redisClient, { connectRedis } from "../config/redis.js";
 
 /**
  * Initializes the Redis Search index for session management
  */
 export const initializeRedisindex = async () => {
   try {
+    await connectRedis();
     const allIndexes = await redisClient.ft._list();
 
 

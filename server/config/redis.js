@@ -30,11 +30,19 @@ redisClient.on("error", (err) => {
 });
 redisClient.on("reconnecting", () => console.log("Redis Client Reconnecting..."));
 
-try {
-  await redisClient.connect();
-  console.log("RedisDB connected");
-} catch (err) {
-  console.error("Initial Redis connection failed:", err);
-}
+const connectRedis = async () => {
+  if (!redisClient.isOpen) {
+    try {
+      await redisClient.connect();
+      console.log("RedisDB connected");
+    } catch (err) {
+      console.error("Redis connection failed:", err);
+    }
+  }
+};
 
+// Initial connection attempt
+connectRedis();
+
+export { connectRedis };
 export default redisClient;
