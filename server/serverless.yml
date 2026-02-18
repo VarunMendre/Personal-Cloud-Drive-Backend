@@ -37,9 +37,43 @@ provider:
 functions:
   api:
     handler: lamda.handler
+    timeout: 60
     events:
       - httpApi:
-          path: '*' # Catch-all for everything else
+          path: /directory/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /file/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /share/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /subscriptions/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /webhooks/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /user
+          method: '*'
+      - httpApi:
+          path: /user/profile
+          method: '*'
+      - httpApi:
+          path: /user/profile/picture-upload-url
+          method: '*'
+      - httpApi:
+          path: /users/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /import/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /list
+          method: '*'
+      - httpApi:
+          path: /
           method: '*'
 
   auth:
