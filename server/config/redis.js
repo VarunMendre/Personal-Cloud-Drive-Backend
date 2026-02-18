@@ -30,23 +30,40 @@ redisClient.on("error", (err) => {
 });
 redisClient.on("reconnecting", () => console.log("Redis Client Reconnecting..."));
 
+let connectingPromise = null;
+
 const connectRedis = async () => {
-  if (!redisClient.isOpen) {
-    if (!process.env.REDIS_HOST) {
-      console.warn("Skipping Redis connection: REDIS_HOST is missing");
-      return;
-    }
+  if (redisClient.isOpen) return;
+  if (connectingPromise) return connectingPromise;
+
+  if (!process.env.REDIS_HOST) {
+    console.warn("Skipping Redis connection: REDIS_HOST is missing");
+    return;
+  }
+
+  connectingPromise = (async () => {
     try {
       await redisClient.connect();
       console.log("RedisDB connected");
     } catch (err) {
       console.error("Redis connection failed:", err);
+      throw err; // Re-throw to allow the promise to reflect failure
+    } finally {
+      connectingPromise = null;
     }
-  }
+  })();
+
+  return connectingPromise;
 };
 
-// Initial connection attempt
-connectRedis();
+// Initial connection attempt (Top-level await for module-level reliability)
+if (process.env.REDIS_HOST) {
+  try {
+    await connectRedis();
+  } catch (err) {
+    console.error("Critical: Initial Redis connection failed during module load.");
+  }
+}
 
 export { connectRedis };
 export default redisClient;

@@ -1,6 +1,6 @@
 import { rateLimit } from "express-rate-limit";
 import { RedisStore } from "rate-limit-redis";
-import redisClient from "../config/redis.js";
+import redisClient, { connectRedis } from "../config/redis.js";
 
 const _1Hour = 60 * 60 * 1000;
 const _15Minute = 15 * 60 * 1000;
@@ -23,7 +23,17 @@ const createRateLimiter = ({
     legacyHeaders,
     message,
     store: new RedisStore({
-      sendCommand: (...args) => redisClient.sendCommand(args),
+      sendCommand: async (...args) => {
+        if (!redisClient.isOpen) {
+          try {
+            await connectRedis();
+          } catch (err) {
+            console.error("Redis Store sendCommand: Connection failed", err.message);
+            throw new Error("Redis connection unavailable for rate limiting");
+          }
+        }
+        return redisClient.sendCommand(args);
+      },
       prefix: "rl:",
     }),
   });
