@@ -15,7 +15,71 @@ functions:
   api:
     handler: lamda.handler
     events:
-      - httpApi: '*' # This makes it a catch-all for all routes (GET, POST, etc.)
+      - httpApi:
+          path: /directory/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /file/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /share/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /subscriptions/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /webhooks/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /user
+          method: GET
+      - httpApi:
+          path: /user/profile
+          method: '*'
+      - httpApi:
+          path: /user/profile/picture-upload-url
+          method: GET
+      - httpApi:
+          path: /users/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /import/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /list
+          method: GET
+      - httpApi:
+          path: /
+          method: GET
+
+  auth:
+    handler: auth-lamda.handler
+    memorySize: 1024 # More memory for bcrypt operations
+    events:
+      - httpApi:
+          path: /auth/{proxy+}
+          method: '*'
+      - httpApi:
+          path: /user/register
+          method: POST
+      - httpApi:
+          path: /user/login
+          method: POST
+      - httpApi:
+          path: /user/set-password
+          method: POST
+      - httpApi:
+          path: /user/change-password
+          method: POST
+      - httpApi:
+          path: /user/logout
+          method: POST
+      - httpApi:
+          path: /user/logout-all
+          method: POST
+      - httpApi:
+          path: /user/has-password
+          method: GET
 
 package:
   # This ensures we only upload what's necessary to keep the package small
