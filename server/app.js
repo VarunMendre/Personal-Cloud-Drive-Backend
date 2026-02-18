@@ -98,23 +98,11 @@ app.use((err, req, res, next) => {
 });
 
 
-// Lazy initialization for Redis Index to prevent blocking startup
-let isInitialized = false;
-app.use(async (req, res, next) => {
-  if (!isInitialized && process.env.LAMBDA_TASK_ROOT) {
-    try {
-      await initializeRedisindex();
-      isInitialized = true;
-    } catch (err) {
-      console.error("Lazy Redis Init Error:", err);
-    }
-  }
-  next();
-});
+// Initialization (Top-level, non-blocking)
+initializeRedisindex().catch(err => console.error("Redis Index Init Error:", err));
 
 if (!process.env.LAMBDA_TASK_ROOT) {
-  app.listen(PORT, async () => {
-    await initializeRedisindex();
+  app.listen(PORT, () => {
     console.log(`Server Started on port ${PORT}`);
   });
 }

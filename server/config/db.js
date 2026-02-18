@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 let isConnected = false;
 export async function connectDB() {
   if (isConnected) return;
+  if (!process.env.DB_URL) {
+    console.error("CRITICAL ERROR: DB_URL environment variable is MISSING!");
+    return;
+  }
   try {
     await mongoose.connect(process.env.DB_URL);
     isConnected = mongoose.connection.readyState;

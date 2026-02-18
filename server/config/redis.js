@@ -32,6 +32,10 @@ redisClient.on("reconnecting", () => console.log("Redis Client Reconnecting...")
 
 const connectRedis = async () => {
   if (!redisClient.isOpen) {
+    if (!process.env.REDIS_HOST) {
+      console.warn("Skipping Redis connection: REDIS_HOST is missing");
+      return;
+    }
     try {
       await redisClient.connect();
       console.log("RedisDB connected");
