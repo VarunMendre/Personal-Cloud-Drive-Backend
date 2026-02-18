@@ -1,76 +1,51 @@
 service: StorageApp-Serverless
-useDotenv: true
 
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-south-1
-  memorySize: 512
-  timeout: 60
-
-  environment:
-    DB_URL: ${env:DB_URL, ""}
-    REDIS_HOST: ${env:REDIS_HOST, ""}
-    REDIS_PORT: ${env:REDIS_PORT, ""}
-    REDIS_PASSWORD: ${env:REDIS_PASSWORD, ""}
-    REDIS_USERNAME: ${env:REDIS_USERNAME, "default"}
-    MY_SECRET_KEY: ${env:MY_SECRET_KEY, ""}
-    CLIENT_ORIGIN: ${env:CLIENT_ORIGIN, ""}
-    BUCKET_NAME: ${env:BUCKET_NAME, ""}
-    CLOUDFRONT_PRIVATE_KEY: ${env:CLOUDFRONT_PRIVATE_KEY, ""}
-    CLOUDFRONT_KEY_PAIR_ID: ${env:CLOUDFRONT_KEY_PAIR_ID, ""}
-    CLOUDFRONT_DOMAIN: ${env:CLOUDFRONT_DOMAIN, ""}
-
+  region: ap-south-1 # CHANGE THIS to your preferred region (e.g., ap-south-1 for Mumbai)
+  memorySize: 512 # Adjust based on your app's needs
+  timeout: 30 # Adjust based on your app's needs
   httpApi:
     cors:
       allowedOrigins:
         - https://cloudvault.cloud
+        - https://www.cloudvault.cloud
+        # Note: If you have a custom domain in CLIENT_ORIGIN, add it here as well.
       allowedHeaders:
         - Content-Type
         - Authorization
+        - set-cookie
       allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - OPTIONS
+        - '*'
       allowCredentials: true
+      maxAge: 600 # 10 minutes cache for preflight
 
 functions:
-  # Main API handler
   api:
     handler: lamda.handler
-    timeout: 60
     events:
-      - httpApi: "*"
-
-  # Auth specific handler
+      - httpApi: '*' # This makes it a catch-all for all other routes
+  
   auth:
-    handler: auth-lamda.handler
-    memorySize: 1024
-    timeout: 60
+    handler: authLamda.handler
+    memorySize: 1024 # Increased memory for CPU-intensive bcrypt operations
     events:
-      - httpApi:
-          path: /user/register
-          method: "*"
-      - httpApi:
-          path: /user/login
-          method: "*"
-      - httpApi:
-          path: /user/set-password
-          method: "*"
-      - httpApi:
-          path: /user/change-password
-          method: "*"
+      - httpApi: 'POST /user/login'
+      - httpApi: 'POST /user/register'
+      - httpApi: 'POST /user/set-password'
+      - httpApi: 'POST /user/change-password'
+      - httpApi: 'ANY /auth/{proxy+}'
+      - httpApi: 'ANY /user/auth/{proxy+}'
 
 package:
+  # This ensures we only upload what's necessary to keep the package small
   patterns:
     - "!**"
     - "app.js"
     - "lamda.js"
-    - "auth-lamda.js"
+    - "authLamda.js"
     - "package.json"
-    - "package-lock.json"
     - "config/**"
     - "controllers/**"
     - "middlewares/**"
@@ -80,7 +55,8 @@ package:
     - "utils/**"
     - "validators/**"
     - "node_modules/**"
+    - "package-lock.json"
     - "!.git/**"
-    - "!.env"
+    - "!.env" # Excluded because you will add variables manually
     - "!test/**"
     - "!StorageApp-Serverless/**"

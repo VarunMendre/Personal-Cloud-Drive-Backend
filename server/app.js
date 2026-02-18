@@ -48,7 +48,11 @@ app.use(
   })
 );
 
-const whitelist = ["https://cloudvault.cloud", "https://www.cloudvault.cloud"];
+const whitelist = [
+  "https://cloudvault.cloud",
+  "https://www.cloudvault.cloud",
+  clientOrigin,
+].filter(Boolean);
 
 app.use(
   cors({

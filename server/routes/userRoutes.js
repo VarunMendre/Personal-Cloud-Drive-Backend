@@ -6,7 +6,6 @@ import checkAuth, {
   checkUserDeleted,
 } from "../middlewares/authMiddleware.js";
 import {
-  changeUserPassword,
   deleteUserFiles,
   getAllUsers,
   getCurrentUser,
@@ -16,19 +15,22 @@ import {
   getUserPassword,
   getProfilePictureUploadUrl,
   hardDeleteUser,
-  login,
   logout,
   logoutAll,
   logOutById,
   permissionPage,
   recoverUser,
-  register,
-  setUserPassword,
   softDeleteUser,
   updateUserFile,
   updateUserProfile,
   updateUserRole,
 } from "../controllers/userController.js";
+import {
+  login,
+  register,
+  setUserPassword,
+  changeUserPassword,
+} from "../controllers/authController.js";
 import { rateLimiters } from "../utils/rateLimiting.js";
 import { throttlers } from "../utils/throttler.js";
 
