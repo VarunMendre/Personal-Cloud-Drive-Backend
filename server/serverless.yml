@@ -18,72 +18,22 @@ provider:
     CLIENT_ORIGIN: ${env:CLIENT_ORIGIN, ""}
     BUCKET_NAME: ${env:BUCKET_NAME, ""}
   httpApi:
-    cors:
-      allowedOrigins:
-        - https://cloudvault.cloud
-        - https://www.cloudvault.cloud
-      allowedHeaders:
-        - Content-Type
-        - Authorization
-      allowedMethods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - OPTIONS
-      allowCredentials: true
-      maxAge: 600 # 10 minutes
+    # We disable CORS here because it's handled in app.js via the 'cors' middleware.
+    # Leaving it 'true' or '*' conflicts with credentials: true.
+    # cors: true
 
 functions:
   api:
     handler: lamda.handler
     timeout: 60
     events:
-      - httpApi:
-          path: /directory/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /file/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /share/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /subscriptions/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /webhooks/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /user
-          method: '*'
-      - httpApi:
-          path: /user/profile
-          method: '*'
-      - httpApi:
-          path: /user/profile/picture-upload-url
-          method: '*'
-      - httpApi:
-          path: /users/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /import/{proxy+}
-          method: '*'
-      - httpApi:
-          path: /list
-          method: '*'
-      - httpApi:
-          path: /
-          method: '*'
+      - httpApi: '*' # All routes go to api by default
 
   auth:
     handler: auth-lamda.handler
     memorySize: 1024 # More memory for bcrypt operations
     timeout: 60
     events:
-      - httpApi:
-          path: /auth/{proxy+}
-          method: '*'
       - httpApi:
           path: /user/register
           method: '*'
@@ -95,15 +45,6 @@ functions:
           method: '*'
       - httpApi:
           path: /user/change-password
-          method: '*'
-      - httpApi:
-          path: /user/logout
-          method: '*'
-      - httpApi:
-          path: /user/logout-all
-          method: '*'
-      - httpApi:
-          path: /user/has-password
           method: '*'
 
 package:
