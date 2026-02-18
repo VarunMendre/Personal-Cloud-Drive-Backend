@@ -184,15 +184,22 @@ export const getProfilePictureUploadUrl = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  const { sid } = req.signedCookies;
-  await redisClient.del(`session:${sid}`);
-  res.clearCookie("sid", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    signed: true,
-  });
-  res.status(204).end();
+  try {
+    const { sid } = req.signedCookies;
+    if (sid) {
+      await redisClient.del(`session:${sid}`);
+    }
+    res.clearCookie("sid", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      signed: true,
+    });
+    res.status(204).end();
+  } catch (err) {
+    console.error("Logout error:", err);
+    return errorResponse(res, "Logout failed", 500);
+  }
 };
 
 export const logoutAll = async (req, res) => {
