@@ -18,33 +18,19 @@ provider:
     CLIENT_ORIGIN: ${env:CLIENT_ORIGIN, ""}
     BUCKET_NAME: ${env:BUCKET_NAME, ""}
   httpApi:
-    # We disable CORS here because it's handled in app.js via the 'cors' middleware.
-    # Leaving it 'true' or '*' conflicts with credentials: true.
-    # cors: true
+    # Disable infra-level CORS to avoid conflict with Express 'cors' middleware
+    cors: false
 
 functions:
   api:
     handler: lamda.handler
     timeout: 60
     events:
-      - httpApi: '*' # All routes go to api by default
-
-  auth:
-    handler: auth-lamda.handler
-    memorySize: 1024 # More memory for bcrypt operations
-    timeout: 60
-    events:
       - httpApi:
-          path: /user/register
+          path: /
           method: '*'
       - httpApi:
-          path: /user/login
-          method: '*'
-      - httpApi:
-          path: /user/set-password
-          method: '*'
-      - httpApi:
-          path: /user/change-password
+          path: /{proxy+}
           method: '*'
 
 package:
@@ -53,7 +39,6 @@ package:
     - "!**"
     - "app.js"
     - "lamda.js"
-    - "auth-lamda.js"
     - "package.json"
     - "config/**"
     - "controllers/**"

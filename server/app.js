@@ -98,11 +98,23 @@ app.use((err, req, res, next) => {
 });
 
 
-// Initialize Redis Search Index (runs on both Lambda and Local)
-initializeRedisindex().catch(err => console.error("Redis Index Init Error:", err));
+// Lazy initialization for Redis Index to prevent blocking startup
+let isInitialized = false;
+app.use(async (req, res, next) => {
+  if (!isInitialized && process.env.LAMBDA_TASK_ROOT) {
+    try {
+      await initializeRedisindex();
+      isInitialized = true;
+    } catch (err) {
+      console.error("Lazy Redis Init Error:", err);
+    }
+  }
+  next();
+});
 
 if (!process.env.LAMBDA_TASK_ROOT) {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
+    await initializeRedisindex();
     console.log(`Server Started on port ${PORT}`);
   });
 }
