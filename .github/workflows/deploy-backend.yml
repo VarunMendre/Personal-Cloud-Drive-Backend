@@ -33,15 +33,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: � Debug Env Vars
+      - name: 🔍 Debug Env Vars
         working-directory: ./server
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
         run: |
           echo "Checking if environment variables are set..."
           [ -z "$DB_URL" ] && echo "DB_URL is MISSING" || echo "DB_URL is set"
           [ -z "$REDIS_HOST" ] && echo "REDIS_HOST is MISSING" || echo "REDIS_HOST is set"
-        env:
-          DB_URL: ${{ secrets.DB_URL }}
-          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          [ -z "$CLOUDFRONT_DOMAIN" ] && echo "CLOUDFRONT_DOMAIN is MISSING" || echo "CLOUDFRONT_DOMAIN is set"
 
       - name: �🚀 Deploy to AWS Lambda
         working-directory: ./server
@@ -55,6 +57,9 @@ jobs:
           MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
           CLIENT_ORIGIN: ${{ secrets.CLIENT_ORIGIN }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          CLOUDFRONT_PRIVATE_KEY: ${{ secrets.CLOUDFRONT_PRIVATE_KEY }}
+          CLOUDFRONT_KEY_PAIR_ID: ${{ secrets.CLOUDFRONT_KEY_PAIR_ID }}
+          CLOUDFRONT_DOMAIN: ${{ secrets.CLOUDFRONT_DOMAIN }}
 
       - name: 📢 Telegram Notification (Success)
         if: success()
