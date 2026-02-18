@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: ap-south-1 # CHANGE THIS to your preferred region (e.g., ap-south-1 for Mumbai)
-  memorySize: 512 # Adjust based on your app's needs
+  memorySize: 1024 # High memory for all operations, including CPU-intensive bcrypt
   timeout: 30 # Adjust based on your app's needs
   httpApi:
     cors:
@@ -25,18 +25,7 @@ functions:
   api:
     handler: lamda.handler
     events:
-      - httpApi: '*' # This makes it a catch-all for all other routes
-  
-  auth:
-    handler: authLamda.handler
-    memorySize: 1024 # Increased memory for CPU-intensive bcrypt operations
-    events:
-      - httpApi: 'ANY /user/login'
-      - httpApi: 'ANY /user/register'
-      - httpApi: 'ANY /user/set-password'
-      - httpApi: 'ANY /user/change-password'
-      - httpApi: 'ANY /auth/{proxy+}'
-      - httpApi: 'ANY /user/auth/{proxy+}'
+      - httpApi: '*' # This makes it a catch-all for all routes
 
 package:
   # This ensures we only upload what's necessary to keep the package small
@@ -44,7 +33,6 @@ package:
     - "!**"
     - "app.js"
     - "lamda.js"
-    - "authLamda.js"
     - "package.json"
     - "config/**"
     - "controllers/**"
