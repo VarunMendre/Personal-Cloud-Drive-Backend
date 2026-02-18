@@ -14,7 +14,6 @@ import checkAuth from "./middlewares/authMiddleware.js";
 import helmet from "helmet";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
-import { initializeRedisindex } from "./utils/authUtils.js";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
 
 
@@ -75,10 +74,11 @@ app.use(
   })
 );
 
+// Routes
+app.use("/user", userRoutes);
+app.use("/auth", authRoutes);
 app.use("/directory", checkAuth, directoryRoutes);
 app.use("/file", checkAuth, fileRoutes);
-app.use("/", userRoutes);
-app.use("/auth", authRoutes);
 app.use("/import", checkAuth, importRoutes);
 app.use("/share", shareRoutes);
 app.use("/webhooks", webhookRoutes);
@@ -100,10 +100,6 @@ app.use((err, req, res, next) => {
   const message = err.message || "Something went wrong!";
   res.status(status).json({ status, message });
 });
-
-
-// Initialization (Top-level, non-blocking)
-initializeRedisindex().catch(err => console.error("Redis Index Init Error:", err));
 
 if (!process.env.LAMBDA_TASK_ROOT) {
   app.listen(PORT, () => {

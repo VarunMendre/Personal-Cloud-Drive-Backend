@@ -31,10 +31,10 @@ functions:
     handler: authLamda.handler
     memorySize: 1024 # Increased memory for CPU-intensive bcrypt operations
     events:
-      - httpApi: 'POST /user/login'
-      - httpApi: 'POST /user/register'
-      - httpApi: 'POST /user/set-password'
-      - httpApi: 'POST /user/change-password'
+      - httpApi: 'ANY /user/login'
+      - httpApi: 'ANY /user/register'
+      - httpApi: 'ANY /user/set-password'
+      - httpApi: 'ANY /user/change-password'
       - httpApi: 'ANY /auth/{proxy+}'
       - httpApi: 'ANY /user/auth/{proxy+}'
 
