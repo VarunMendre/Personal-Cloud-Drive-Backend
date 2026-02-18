@@ -33,9 +33,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      - name: 🚀 Deploy to AWS Lambda
+      - name: � Debug Env Vars
+        working-directory: ./server
+        run: |
+          echo "Checking if environment variables are set..."
+          [ -z "$DB_URL" ] && echo "DB_URL is MISSING" || echo "DB_URL is set"
+          [ -z "$REDIS_HOST" ] && echo "REDIS_HOST is MISSING" || echo "REDIS_HOST is set"
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+
+      - name: �🚀 Deploy to AWS Lambda
         working-directory: ./server
         run: serverless deploy
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS_USERNAME: ${{ secrets.REDIS_USERNAME }}
+          MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+          CLIENT_ORIGIN: ${{ secrets.CLIENT_ORIGIN }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
 
       - name: 📢 Telegram Notification (Success)
         if: success()

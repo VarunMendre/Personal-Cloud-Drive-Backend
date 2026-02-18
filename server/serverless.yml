@@ -1,4 +1,5 @@
 service: StorageApp-Serverless
+useDotenv: true
 
 provider:
   name: aws
@@ -8,14 +9,14 @@ provider:
   timeout: 30
   environment:
     # Adding essential env vars here ensures both Lambdas have them
-    DB_URL: ${env:DB_URL}
-    REDIS_HOST: ${env:REDIS_HOST}
-    REDIS_PORT: ${env:REDIS_PORT}
-    REDIS_PASSWORD: ${env:REDIS_PASSWORD}
-    REDIS_USERNAME: ${env:REDIS_USERNAME}
-    MY_SECRET_KEY: ${env:MY_SECRET_KEY}
-    CLIENT_ORIGIN: ${env:CLIENT_ORIGIN}
-    BUCKET_NAME: ${env:BUCKET_NAME}
+    DB_URL: ${env:DB_URL, ""}
+    REDIS_HOST: ${env:REDIS_HOST, ""}
+    REDIS_PORT: ${env:REDIS_PORT, ""}
+    REDIS_PASSWORD: ${env:REDIS_PASSWORD, ""}
+    REDIS_USERNAME: ${env:REDIS_USERNAME, "default"}
+    MY_SECRET_KEY: ${env:MY_SECRET_KEY, ""}
+    CLIENT_ORIGIN: ${env:CLIENT_ORIGIN, ""}
+    BUCKET_NAME: ${env:BUCKET_NAME, ""}
   httpApi:
     # We disable CORS here because it's handled in app.js via the 'cors' middleware.
     # Leaving it 'true' or '*' conflicts with credentials: true.
