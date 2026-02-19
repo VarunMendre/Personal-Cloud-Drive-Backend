@@ -2,6 +2,7 @@ import Directory from "../models/directoryModel.js";
 import File from "../models/fileModel.js";
 import User from "../models/userModel.js";
 import Subscription from "../models/subscriptionModel.js";
+import OTP from "../models/otpModel.js";
 import { getEditableRoles } from "../utils/permissions.js";
 import redisClient from "../config/redis.js";
 import { getFileUrl, createUploadSignedUrl, deletes3Files } from "../services/s3.js";
