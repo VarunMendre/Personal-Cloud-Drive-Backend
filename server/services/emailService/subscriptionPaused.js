@@ -16,7 +16,7 @@ export const sendSubscriptionPausedEmail = async (email, userName, reason = "pay
     <p class="text">While your subscription is paused, your existing files are safe, but you may have restricted access to uploading or downloading files depending on your current usage.</p>
 
     <div class="button-wrapper">
-      <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/subscription" class="button">Check Account Status</a>
+      <a href="${process.env.CLIENT_URL || "https://cloudvault.cloud"}/subscription" class="button">Check Account Status</a>
     </div>
 
     <p class="text">To resolve this and resume your service, please visit your subscription dashboard or contact our support team.</p>
@@ -28,6 +28,6 @@ export const sendSubscriptionPausedEmail = async (email, userName, reason = "pay
     to: email,
     subject: "Subscription Status Update - Storage Drive",
     html,
-    text: `Hi ${userName},\n\nYour Storage Drive subscription has been paused.\n\nYour account has been paused due to: ${reason}.\n\nWhile paused, your files are safe but access might be restricted. Check your status here: ${process.env.CLIENT_URL || "http://localhost:5173"}/subscription`,
+    text: `Hi ${userName},\n\nYour Storage Drive subscription has been paused.\n\nYour account has been paused due to: ${reason}.\n\nWhile paused, your files are safe but access might be restricted. Check your status here: ${process.env.CLIENT_URL || "https://cloudvault.cloud"}/subscription`,
   });
 };

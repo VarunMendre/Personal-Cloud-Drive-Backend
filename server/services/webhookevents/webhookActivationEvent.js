@@ -46,7 +46,7 @@ export const handleActivationEvent = async (webhookBody) => {
         );
 
         // Fetch recent invoice link for the activation email
-        let finalInvoiceUrl = `${process.env.CLIENT_URL || "http://localhost:5173"}/subscription`;
+        let finalInvoiceUrl = `${process.env.CLIENT_URL || "https://cloudvault.cloud"}/subscription`;
         try {
           const invoices = await rzpInstance.invoices.all({
             subscription_id: subId,

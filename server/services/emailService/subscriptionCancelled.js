@@ -20,14 +20,14 @@ export const sendSubscriptionCancelledEmail = async (email, userName) => {
     <p class="text">We're sorry to see you go! If there's anything we could have done better, we'd love to hear your feedback.</p>
 
     <div class="button-wrapper">
-      <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/plans" class="button">View Plans to Re-subscribe</a>
+      <a href="${process.env.CLIENT_URL || "https://cloudvault.cloud"}/plans" class="button">View Plans to Re-subscribe</a>
     </div>
 
     <p class="text">If you didn't intend to cancel, you can upgrade your plan at any time to restore your premium features.</p>
   `;
 
     const html = wrapEmailTemplate("Subscription Cancelled", contentHtml, "#64748b"); // Slate Grey
-    const text = `Hi ${userName},\n\nYour subscription to Storage Drive has been cancelled. Your account has been reverted to the free tier.\n\nView plans to re-subscribe: ${process.env.CLIENT_URL || "http://localhost:5173"}/plans`;
+    const text = `Hi ${userName},\n\nYour subscription to Storage Drive has been cancelled. Your account has been reverted to the free tier.\n\nView plans to re-subscribe: ${process.env.CLIENT_URL || "https://cloudvault.cloud"}/plans`;
 
     return await sendEmail({
         to: email,

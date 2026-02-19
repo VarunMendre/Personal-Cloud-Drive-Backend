@@ -16,7 +16,7 @@ export const sendSubscriptionResumedEmail = async (email, userName) => {
     <p class="text">You can now continue managing your files with full access. Thank you for staying with us!</p>
 
     <div class="button-wrapper">
-      <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/dashboard" class="button">Go to Dashboard</a>
+      <a href="${process.env.CLIENT_URL || "https://cloudvault.cloud"}/dashboard" class="button">Go to Dashboard</a>
     </div>
 
     <p class="text">If you noticed any issues during the transition, please let us know.</p>

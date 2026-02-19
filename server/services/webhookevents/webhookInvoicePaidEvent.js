@@ -134,6 +134,45 @@ export const handleInvoicePaidEvent = async (webhookBody) => {
       console.log(`[Subscription] Started authenticated trial: ${newSubId}`);
     }
 
+    // 5. Restore limits for recurring payments (e.g. if paid after being halted)
+    else if (existingSub) {
+      const planInfo = SUBSCRIPTION_PLANS[rzpSub.plan_id];
+      const user = await User.findById(userId);
+
+      if (user && planInfo) {
+        user.maxStorageLimit = planInfo.storageQuotaInBytes;
+        user.maxDevices = planInfo.maxDevices;
+        user.maxFileSize = planInfo.maxFileSize;
+        user.subscriptionId = newSubId;
+        await user.save();
+
+        // Clear halted state if it existed
+        await Subscription.findOneAndUpdate(
+          { razorpaySubscriptionId: newSubId },
+          { $set: { haltedAt: null, status: "active" } }
+        );
+
+        // Send Activation/Restored Email
+        try {
+          const storageLimitGb = Math.round(planInfo.storageQuotaInBytes / (1024 * 1024 * 1024));
+          const dashboardUrl = `${process.env.CLIENT_URL || "https://cloudvault.cloud"}/subscription`;
+          
+          await sendSubscriptionActiveEmail(
+            user.email,
+            user.name,
+            planInfo.name,
+            storageLimitGb,
+            dashboardUrl,
+            "Go to Dashboard"
+          );
+        } catch (emailErr) {
+          console.error("[Subscription] Failed to send restoration email:", emailErr.message);
+        }
+
+        console.log(`[Subscription] Limits restored for user ${userId} on successful payment`);
+      }
+    }
+
     return { success: true };
   } catch (error) {
     console.error(`Error processing invoice.paid event: ${error.message}`);

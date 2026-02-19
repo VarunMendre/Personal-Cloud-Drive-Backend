@@ -16,7 +16,7 @@ export const sendSubscriptionGracePeriodEmail = async (email, userName, daysLeft
     <p class="text">To avoid any interruption to your service, please update your payment method or complete the pending transaction.</p>
 
     <div class="button-wrapper">
-      <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/subscription" class="button">Update Payment Method</a>
+      <a href="${process.env.CLIENT_URL || "https://cloudvault.cloud"}/subscription" class="button">Update Payment Method</a>
     </div>
 
     <p class="text">If you've already made the payment, it might still be processing. Feel free to contact us if you need help.</p>

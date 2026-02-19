@@ -44,6 +44,10 @@ const subscriptionSchema = new Schema(
     gracePeriodEndsAt: {
       type: Date,
     },
+     haltedAt: { // Add this
+      type: Date,
+      default: null
+    },
     currentPeriodStart: {
       type: Date,
       default: null,

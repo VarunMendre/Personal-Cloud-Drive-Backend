@@ -16,7 +16,7 @@ export const sendSubscriptionHaltedEmail = async (email, userName) => {
     <p class="text">To restore your account and prevent any data loss (if applicable), please re-subscribe to one of our plans.</p>
 
     <div class="button-wrapper">
-      <a href="${process.env.CLIENT_URL || "http://localhost:5173"}/plans" class="button">View Plans & Re-subscribe</a>
+      <a href="${process.env.CLIENT_URL || "https://cloudvault.cloud"}/plans" class="button">View Plans & Re-subscribe</a>
     </div>
 
     <p class="text">Stored files will be retained for a limited time according to our policy. Please take action soon.</p>

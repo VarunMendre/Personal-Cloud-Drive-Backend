@@ -12,12 +12,13 @@ export const webhookHaltedEvent = async (webhookBody) => {
       {
         status: "halted",
         gracePeriodEndsAt: null,
+        haltedAt: new Date(), // Anchor for Day 4 cron
       },
       { new: true }
     );
 
     if (subscription) {
-      // If subscription is halted (payment failed after grace period), revert to free tier
+      // Revert to free tier limits (already refactored to NOT delete files)
       await resetUserToDefault(subscription.userId);
 
       // Send Halted Email

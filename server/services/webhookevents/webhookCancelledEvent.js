@@ -1,6 +1,6 @@
 import Subscription from "../../models/subscriptionModel.js";
 import User from "../../models/userModel.js";
-import { resetUserToDefault } from "../../utils/resetUserLimits.js";
+import { resetUserToDefault, deleteSubscriptionFiles } from "../../utils/resetUserLimits.js";
 import { sendSubscriptionCancelledEmail } from "../emailService/subscriptionCancelled.js";
 
 export const handleCancelledEvent = async (webhookBody) => {
@@ -15,8 +15,9 @@ export const handleCancelledEvent = async (webhookBody) => {
     subscription.cancelledAt = new Date().toISOString();
     await subscription.save();
 
-    // reset user to default and delete subscription files
+    // Reset user to default limits and delete subscription-only files
     await resetUserToDefault(subscription.userId);
+    await deleteSubscriptionFiles(subscription.userId);
 
     // send Cancellation Email
     try {
