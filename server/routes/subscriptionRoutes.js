@@ -12,6 +12,7 @@ import {
 import checkAuth from "../middlewares/authMiddleware.js";
 import { checkSubscriptionStatus } from "../controllers/subscriptionController.js";
 import { rateLimiters } from "../utils/rateLimiting.js";
+import { processSubscriptionStates } from "../cron-jobs/subscriptionProcessor.js";
 
 const router = express.Router();
 
@@ -32,5 +33,8 @@ router.get("/status/:id", checkAuth, checkSubscriptionStatus);
 
 router.get("/eligible-plans", checkAuth, renewalSubscription);
 router.post("/change-plan", checkAuth, rateLimiters.upgradeLimiter, changePlan);
+
+// cron jobs
+router.get("/run-cron/subscription-processor", processSubscriptionStates);
 
 export default router;
