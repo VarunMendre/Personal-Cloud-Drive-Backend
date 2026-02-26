@@ -3,7 +3,7 @@ service: StorageApp-Serverless
 provider:
   name: aws
   runtime: nodejs20.x
-  region: ap-south-1 # CHANGE THIS to your preferred region (e.g., ap-south-1 for Mumbai)
+  region: ap-south-1 
   memorySize: 1024 # High memory for all operations, including CPU-intensive bcrypt
   timeout: 30 # Adjust based on your app's needs
   httpApi:

@@ -1,6 +1,6 @@
 # CloudVault Backend 🚀
 
-CloudVault is a robust, production-ready backend for a Personal Cloud Drive application. Built with **Node.js** and **Express**, it provides a secure and scalable environment for managing files and directories, integrating seamlessly with AWS storage and Razorpay for subscriptions.
+CloudVault is a robust, production-ready backend for a Personal Cloud Drive application. Built with **Node.js** and **Express**, it provides a secure and scalable environment for managing files and directories, integrating seamlessly with AWS storage and Razorpay for subscriptions. It is designed to run both on traditional servers and as a **Serverless** application on AWS Lambda.
 
 ## 🌟 Key Features
 
@@ -27,8 +27,15 @@ CloudVault is a robust, production-ready backend for a Personal Cloud Drive appl
 
 ### 💳 Subscription & Payments
 - **Razorpay Integration**: Automated subscription lifecycle management (Create, Upgrade, Cancel, Resume, Pause).
+- **Advanced State Machine**: Handles complex transitions: `pending` -> `halted` (Day 3) -> `cancelled/purge` (Day 4).
+- **Webhook Processing**: Robust handling of Razorpay events (Invoice Paid, Payment Failed, Subscription Halted/Cancelled).
 - **Plan Management**: Tiered storage plans with automated limit enforcement.
 - **Invoicing**: Automated generation and retrieval of subscription invoices.
+
+### 🛠 Administrative Operations
+- **User Management**: View all users, manage roles (Owner/Admin/User), and handle account recovery.
+- **System Oversight**: Administrative view and management of user files.
+- **Session Control**: Logout users by ID or terminate all active sessions.
 
 ### 🔄 External Integrations
 - **Google Drive Import**: Seamlessly import files directly from Google Drive using Google APIs.
@@ -45,11 +52,11 @@ CloudVault is a robust, production-ready backend for a Personal Cloud Drive appl
 
 | Category | Technologies |
 | :--- | :--- |
-| **Runtime** | Node.js |
-| **Framework** | Express.js |
+| **Runtime** | Node.js (v20.x supported) |
+| **Framework** | Express.js, Serverless Framework |
 | **Database** | MongoDB (Mongoose) |
 | **Caching/Session** | Redis |
-| **Cloud Storage** | AWS S3, CloudFront |
+| **Cloud Infrastructure**| AWS (Lambda, S3, CloudFront) |
 | **Payments** | Razorpay |
 | **Validation** | Zod |
 | **Communication** | Resend (Email), Axios |
@@ -61,14 +68,17 @@ CloudVault is a robust, production-ready backend for a Personal Cloud Drive appl
 ```text
 ├── config/             # DB and core configurations
 ├── controllers/        # Business logic for API endpoints
-├── cron-jobs/          # Scheduled background tasks
+├── cron-jobs/          # Scheduled background tasks (Subscription/Trial state processing)
+├── handlers/           # Lambda specific handlers (e.g., authLambda)
 ├── middlewares/        # Auth and validation middlewares
-├── models/             # Mongoose schemas (User, File, Directory, etc.)
+├── models/             # Mongoose schemas (User, File, Directory, Subscription, Webhook, etc.)
 ├── routes/             # API route definitions
-├── services/           # External service integrations (AWS, Google, Razorpay)
+├── services/           # External service integrations (AWS, Google, Razorpay, Email)
 ├── utils/              # Helper functions, rate limiters, and throttlers
 ├── validators/         # Zod schemas for request validation
-└── app.js              # Application entry point
+├── app.js              # Application entry point (Express)
+├── lamda.js            # Serverless entry point
+└── serverless.yml      # Serverless Framework configuration
 ```
 
 ---
@@ -110,17 +120,25 @@ CloudVault is a robust, production-ready backend for a Personal Cloud Drive appl
    npm start
    ```
 
+### Serverless Deployment
+To deploy to AWS Lambda:
+```bash
+serverless deploy
+```
+
 ---
 
 ## 🛣 API Endpoints (Brief)
 
 - `/auth` - Authentication (Google, Logout)
-- `/user` - User registration, login, profile, and management.
+- `/user` - User registration, login, profile, and basic management.
+- `/users` - **Admin/Owner** operations (List users, change roles, recover accounts).
 - `/file` - File CRUD and uploads.
 - `/directory` - Directory management.
 - `/share` - Resource sharing and public links.
 - `/import` - Google Drive imports.
 - `/subscriptions` - Payment and plan management.
+- `/webhooks` - Razorpay webhook handlers.
 
 ---
 
