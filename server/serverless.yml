@@ -33,7 +33,22 @@ functions:
   api:
     handler: lamda.handler
     events:
-      - httpApi: '*' # This makes it a catch-all for all routes
+      - httpApi: '*' # Catch-all for Express routes
+
+  subscriptionProcessor:
+    handler: handlers/cronHandlers.subscriptionProcessor
+    events:
+      - schedule: cron(0 0 * * ? *) # Daily at Midnight
+
+  trialProcessor:
+    handler: handlers/cronHandlers.trialProcessor
+    events:
+      - schedule: rate(1 hour) # Every hour
+
+  uploadCleanup:
+    handler: handlers/cronHandlers.uploadCleanup
+    events:
+      - schedule: cron(0 3 * * ? *) # Daily at 3 AM
 
 package:
   # This ensures we only upload what's necessary to keep the package small
@@ -45,6 +60,7 @@ package:
     - "config/**"
     - "controllers/**"
     - "cron-jobs/**"
+    - "handlers/**"
     - "middlewares/**"
     - "models/**"
     - "routes/**"
