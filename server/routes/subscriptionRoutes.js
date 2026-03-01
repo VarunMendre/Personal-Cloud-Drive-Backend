@@ -14,6 +14,7 @@ import { checkSubscriptionStatus } from "../controllers/subscriptionController.j
 import { rateLimiters } from "../utils/rateLimiting.js";
 import { processSubscriptionStates } from "../cron-jobs/subscriptionProcessor.js";
 import { processTrialTransitions } from "../cron-jobs/trialProcessor.js";
+import { cleanOrphanedUploads } from "../cron-jobs/uploadCleanup.js";
 
 const router = express.Router();
 
@@ -38,5 +39,6 @@ router.post("/change-plan", checkAuth, rateLimiters.upgradeLimiter, changePlan);
 // cron jobs
 router.get("/run-cron/subscription-processor", processSubscriptionStates);
 router.get("/run-cron/trial-processor", processTrialTransitions);
+router.get("/run-cron/upload-cleanup", cleanOrphanedUploads);
 
 export default router;
