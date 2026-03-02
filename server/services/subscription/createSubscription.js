@@ -25,7 +25,7 @@ export const createSubscriptionService = async (userId, planId) => {
         return { subscriptionId: existingSubscription.razorpaySubscriptionId };
     }
 
-    const isYearly = ["plan_RuC3yiXd7cecny", "plan_RuC5FeIwTTfUSh"].includes(planId);
+    const isYearly = ["plan_SMPLOQNZuavDPZ", "plan_SMPHSrTBZSIPQl"].includes(planId);
 
     const session = await Subscription.startSession();
     session.startTransaction();

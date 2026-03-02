@@ -78,15 +78,15 @@ export const getEligiblePlanService = async (userId) => {
 // Simple helper to match FE features
 function getPlanFeatures(id) {
   const features = {
-    plan_RuC1EiZlwurf5N: ["100 GB storage", "1 GB upload limit", "2 devices"],
-    plan_RuC2evjqwSxHOH: ["200 GB storage", "2 GB upload limit", "3 devices"],
-    plan_RuC3yiXd7cecny: [
+    plan_SMPP6YUub7ZlMM: ["100 GB storage", "1 GB upload limit", "2 devices"],
+    plan_SMPQkwuHf1bQKr: ["200 GB storage", "2 GB upload limit", "3 devices"],
+    plan_SMPLOQNZuavDPZ: [
       "200 GB yearly storage",
       "1 GB upload limit",
       "2 devices",
       "Yearly Savings",
     ],
-    plan_RuC5FeIwTTfUSh: [
+    plan_SMPHSrTBZSIPQl: [
       "300 GB yearly storage",
       "2 GB upload limit",
       "3 devices",

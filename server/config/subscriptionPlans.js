@@ -10,7 +10,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 0,
   },
   // Standard Monthly
-  plan_RuC1EiZlwurf5N: {
+  plan_SMPP6YUub7ZlMM: {
     name: "Standard Plan",
     tagline: "For Students & Freelancers",
     storageQuotaInBytes: 100 * 1024 ** 3, // 100 GB
@@ -20,7 +20,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 349,
   },
   // Premium Monthly
-  plan_RuC2evjqwSxHOH: {
+  plan_SMPQkwuHf1bQKr: {
     name: "Premium Plan",
     tagline: "For Professionals & Creators",
     storageQuotaInBytes: 200 * 1024 ** 3, // 200 GB
@@ -30,7 +30,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 999,
   },
   // Standard Yearly
-  plan_RuC3yiXd7cecny: {
+  plan_SMPLOQNZuavDPZ: {
     name: "Standard Plan",
     tagline: "For Students & Freelancers",
     storageQuotaInBytes: 200 * 1024 ** 3, // 200 GB
@@ -40,7 +40,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 3999,
   },
   // Premium Yearly
-  plan_RuC5FeIwTTfUSh: {
+  plan_SMPHSrTBZSIPQl: {
     name: "Premium Plan",
     tagline: "For Professionals & Creators",
     storageQuotaInBytes: 300 * 1024 ** 3, // 300 GB

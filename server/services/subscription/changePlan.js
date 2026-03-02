@@ -58,7 +58,7 @@ export const changePlanService = async (userId, planId) => {
       throw error;
     }
 
-    const isYearly = ["plan_RuC3yiXd7cecny", "plan_RuC5FeIwTTfUSh"].includes(
+    const isYearly = ["plan_SMPLOQNZuavDPZ", "plan_SMPHSrTBZSIPQl"].includes(
       planId
     );
 
@@ -89,7 +89,7 @@ export const changePlanService = async (userId, planId) => {
 
       await session.commitTransaction();
       session.endSession();
-      
+
       console.log(
         `Upgrade initiated: User ${userId} → Plan ${planId}, Bonus: ${bonusDays} days`
       );
@@ -100,7 +100,7 @@ export const changePlanService = async (userId, planId) => {
       // If DB save failed, we must cancel the created Razorpay subscription to avoid charging user
       // without a record.
       console.error("DB Save failed during upgrade, cancelling Razorpay subscription:", newSubscription.id);
-      await rzpInstance.subscriptions.cancel(newSubscription.id).catch(err => 
+      await rzpInstance.subscriptions.cancel(newSubscription.id).catch(err =>
         console.error("CRITICAL: Failed to cancel orphaned subscription:", newSubscription.id, err)
       );
       throw dbError; // Re-throw to main catch
