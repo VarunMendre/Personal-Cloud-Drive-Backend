@@ -11,8 +11,12 @@ export const getEligiblePlanService = async (userId) => {
   const currentPlanId = activeSub?.planId;
   const currentPrice = PLAN_INFO[currentPlanId]?.price || 0;
 
-  // 3. decide days left in current plan
+  // If no active subscription, return empty eligible plans
+  if (!activeSub) {
+    return { eligiblePlans: [], daysRemaining: 0 };
+  }
 
+  // 3. decide days left in current plan
   const daysRemaining = Math.max(
     0,
     Math.ceil(

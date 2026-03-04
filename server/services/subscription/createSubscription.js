@@ -11,7 +11,6 @@ export const createSubscriptionService = async (userId, planId) => {
     // Check for any subscription that isn't halted/cancelled
     const existingSubscription = await Subscription.findOne({
         userId,
-        planId, // Ensure we check for the specific plan requested
         status: { $in: ["active", "created", "pending", "past_due"] },
     });
 
@@ -22,8 +21,15 @@ export const createSubscriptionService = async (userId, planId) => {
             error.status = 400;
             throw error;
         }
-        // If it's just 'created', return that ID so they can finish payment
-        return { subscriptionId: existingSubscription.razorpaySubscriptionId };
+        
+        // Only reuse if it's the SAME plan. If user picked a different plan, we need a new subscription!
+        if (existingSubscription.status === "created" && existingSubscription.planId === planId) {
+            return { subscriptionId: existingSubscription.razorpaySubscriptionId };
+        }
+        
+        // If it was 'created' but for a DIFFERENT plan, we'll let it create a new one below.
+        // We should ideally mark the old 'created' one as cancelled/invalid, but for now 
+        // just allowing a new one is safer for the user to proceed.
     }
 
     const isYearly = ["plan_SMPLOQNZuavDPZ", "plan_SMPHSrTBZSIPQl"].includes(planId);
