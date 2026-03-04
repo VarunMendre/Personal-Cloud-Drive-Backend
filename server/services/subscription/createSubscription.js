@@ -11,6 +11,7 @@ export const createSubscriptionService = async (userId, planId) => {
     // Check for any subscription that isn't halted/cancelled
     const existingSubscription = await Subscription.findOne({
         userId,
+        planId, // Ensure we check for the specific plan requested
         status: { $in: ["active", "created", "pending", "past_due"] },
     });
 

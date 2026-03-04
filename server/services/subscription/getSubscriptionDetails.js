@@ -37,7 +37,7 @@ export const getSubscriptionDetailsService = async (userId) => {
     console.warn("User not found in getSubscriptionDetailsService for ID:", userId);
     return null;
   }
-  const planInfo = getPlanById(subscription.planId);
+  const planInfo = PLAN_INFO[subscription.planId] || { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Monthly", price: 0 };
 
   const usedInBytes = await getRootDirectorySize(userId);
   const totalInBytes = user.maxStorageLimit;
