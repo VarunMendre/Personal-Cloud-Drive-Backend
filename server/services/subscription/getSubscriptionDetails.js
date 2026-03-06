@@ -22,15 +22,22 @@ const formatBytes = (bytes) => {
 export const getSubscriptionDetailsService = async (userId) => {
   const subscriptions = await Subscription.find({
     userId,
-    status: { $in: ["active", "created", "pending", "past_due"] },
+    status: { $in: ["active", "created", "pending", "past_due", "cancelled", "halted", "expired"] },
   }).sort({ createdAt: -1 });
 
   if (subscriptions.length === 0) {
     return null;
   }
 
-  // Prioritize active plan for details view (e.g. during migration)
-  const subscription = subscriptions.find(s => s.status === "active") || subscriptions[0];
+  const latestSub = subscriptions[0];
+
+  // If the absolute latest record is inactive, tell the FE there's no active subscription
+  if (["cancelled", "halted", "expired"].includes(latestSub.status)) {
+    return null;
+  }
+
+  // Otherwise, use the latest active/pending one
+  const subscription = subscriptions.find(s => s.status === "active") || latestSub;
 
   const user = await User.findById(userId);
   if (!user) {

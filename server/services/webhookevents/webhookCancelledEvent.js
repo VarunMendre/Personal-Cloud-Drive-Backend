@@ -15,6 +15,16 @@ export const handleCancelledEvent = async (webhookBody) => {
     subscription.cancelledAt = new Date().toISOString();
     await subscription.save();
 
+    // Mark any other 'created' or 'pending' subscriptions as expired to prevent ghosting
+    await Subscription.updateMany(
+      {
+        userId: subscription.userId,
+        razorpaySubscriptionId: { $ne: rzpSubscription.id },
+        status: { $in: ["created", "pending"] }
+      },
+      { $set: { status: "expired" } }
+    );
+
     // Reset user to default limits and delete subscription-only files
     await resetUserToDefault(subscription.userId);
     await deleteSubscriptionFiles(subscription.userId);
