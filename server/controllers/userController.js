@@ -45,6 +45,7 @@ export const getCurrentUser = async (req, res) => {
     maxStorageLimit: user.maxStorageLimit,
     usedStorageInBytes: userDir ? userDir.size : 0,
     subscriptionStatus: user.subscriptionId ? (await Subscription.findOne({ razorpaySubscriptionId: user.subscriptionId }))?.status || "none" : "none",
+    createdAt: userDir ? userDir.createdAt : user.createdAt,
   });
 };
 
