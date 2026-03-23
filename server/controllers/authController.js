@@ -295,7 +295,7 @@ export async function githubLogin(req, res, next) {
 export const setUserPassword = async (req, res, next) => {
   const { newPassword } = req.body;
 
-  if (!newPassword || newPassword < 4) {
+  if (!newPassword || newPassword.length < 4) {
     return errorResponse(res, "Password must be at least 4 characters long", 400);
   }
 
