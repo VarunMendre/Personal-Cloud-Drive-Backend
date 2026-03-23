@@ -26,13 +26,16 @@ const PORT = process.env.PORT || 4000;
 app.set("trust proxy", 1);
 
 if (!process.env.MY_SECRET_KEY) {
-  console.error(
+  if (process.env.NODE_ENV == "production") {
+    throw new Error("CRITICAL: MY_SECRET_KEY is not defined in production environment!");
+  }
+  console.warn(
     "CRITICAL: MY_SECRET_KEY is not defined in environment variables!"
   );
 }
 
 app.use(
-  cookieParser(process.env.MY_SECRET_KEY || "fallback_secret_for_local_only")
+  cookieParser(process.env.MY_SECRET_KEY)
 );
 app.use(express.json());
 const clientOrigin = process.env.CLIENT_ORIGIN?.replace(/\/$/, "");
@@ -77,7 +80,7 @@ app.use(
 
 // Routes
 app.use("/", userRoutes); // Contains its own /user prefixes
-app.use("/auth", authRoutes); 
+app.use("/auth", authRoutes);
 app.use("/directory", checkAuth, directoryRoutes);
 app.use("/file", checkAuth, fileRoutes);
 app.use("/import", checkAuth, importRoutes);
@@ -88,11 +91,6 @@ app.use("/subscriptions", checkAuth, subscriptionRoutes);
 // Health check route
 app.get("/", (req, res) => {
   res.json({ message: "Storage App Backend is Live on Serverless Lambda & Sent Telegram Notification" });
-});
-
-app.get("/err", (req, res) => {
-  console.log("Process exited with error");
-  process.exit(1);
 });
 
 app.use((err, req, res, next) => {

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 import User from "../models/userModel.js";
 import File from "../models/fileModel.js";
 import Directory from "../models/directoryModel.js";
@@ -214,10 +215,8 @@ export const generateShareLink = async (req, res) => {
       return errorResponse(res, "Unauthorized", 403);
     }
 
-    // Generate random token
-    const token =
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+    // Generate random token, cryptographically secure random string of 32 bytes
+    const token = crypto.randomBytes(32).toString("hex");
 
     // Use origin or fallback to env/localhost
     const origin = req.get("origin") || process.env.CLIENT_URL;
