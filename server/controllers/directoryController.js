@@ -85,8 +85,11 @@ export const createDirectory = async (req, res, next) => {
   }
 
   try {
+
+    // Ensures user can only create folders inside their own folders
     const parentDir = await Directory.findOne({
       _id: parentDirId,
+      userId: req.user._id,
     }).lean();
 
     if (!parentDir)

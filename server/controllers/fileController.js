@@ -21,11 +21,12 @@ export const getFile = async (req, res) => {
 
   const { fileId } = data;
 
+  // Fix IDOR on File Download
   const fileData = await File.findOne({
     _id: fileId,
     $or: [
       { userId: req.user._id },
-      { "sharedWith.userId": req.user/}
+      { "sharedWith.userId": req.user._id }
     ]
   });
 
