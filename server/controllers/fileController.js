@@ -23,6 +23,10 @@ export const getFile = async (req, res) => {
 
   const fileData = await File.findOne({
     _id: fileId,
+    $or: [
+      { userId: req.user._id },
+      { "sharedWith.userId": req.user/}
+    ]
   });
 
   // Check if file exists
