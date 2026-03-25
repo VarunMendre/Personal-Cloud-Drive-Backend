@@ -24,6 +24,4 @@ export const gitHubWebhook = async (req, res, next) => {
   }
 
   res.json({ message: "OK" });
-
-  next();
 };
