@@ -153,8 +153,18 @@ export const getAllUsers = async (req, res) => {
 
 
   const keys = [];
-  for await (const key of redisClient.scanIterator({ MATCH: 'session:*', COUNT: 100 })) {
-    keys.push(key);
+  let cursor = "0";
+  try {
+    do {
+      const response = await redisClient.scan(cursor, { MATCH: "session:*", COUNT: 100 });
+      cursor = response.cursor;
+      keys.push(...response.keys);
+    } while (cursor !== "0");
+  } catch (err) {
+    console.error("Redis SCAN failed, falling back to KEYS as a safety measure:", err);
+    // As a ultimate safety fallback for older Redis versions or local mock environments
+    const fallbackKeys = await redisClient.keys("session:*");
+    keys.push(...fallbackKeys);
   }
   const allSessionsUserIdSet = new Set();
 
