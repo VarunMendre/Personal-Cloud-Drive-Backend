@@ -114,7 +114,7 @@ export const login = async (req, res, next) => {
     const { success, data } = validateWithSchema(loginSchema, sanitizedBody);
 
     if (!success) {
-      return errorResponse(res, "Invalid Credentials", 404);
+      return errorResponse(res, "Invalid Credentials", 401);
     }
 
     const { email, password } = data;
@@ -125,7 +125,7 @@ export const login = async (req, res, next) => {
     const user = await User.findOne({ email, isDeleted: false });
 
     if (!user) {
-      return errorResponse(res, "Invalid Credentials", 404);
+      return errorResponse(res, "Invalid Credentials", 401);
     }
 
     // CHECK: If user doesn't have a password (OAuth user who hasn't set password)
@@ -140,7 +140,7 @@ export const login = async (req, res, next) => {
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
-      return errorResponse(res, "Invalid Credentials", 404);
+      return errorResponse(res, "Invalid Credentials", 401);
     }
 
     await createSession(res, user);
