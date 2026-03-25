@@ -152,7 +152,10 @@ export const getAllUsers = async (req, res) => {
   });
 
 
-  const keys = await redisClient.keys("session:*");
+  const keys = [];
+  for await (const key of redisClient.scanIterator({ MATCH: 'session:*', COUNT: 100 })) {
+    keys.push(key);
+  }
   const allSessionsUserIdSet = new Set();
 
 
