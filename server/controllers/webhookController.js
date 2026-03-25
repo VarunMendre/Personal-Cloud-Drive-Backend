@@ -14,7 +14,10 @@ export const handleRazorpayWebhook = async (req, res) => {
         .update(JSON.stringify(req.body))
         .digest("hex");
 
-    if (razorpaySignature !== mySignature) {
+    const signatureBuffer = Buffer.from(razorpaySignature);
+    const mySignatureBuffer = Buffer.from(mySignature);
+
+    if (signatureBuffer.length !== mySignatureBuffer.length || !crypto.timingSafeEqual(signatureBuffer, mySignatureBuffer)) {
         return res.status(400).json({ message: "Invalid signature" });
     }
 
