@@ -11,7 +11,7 @@ export const handleRazorpayWebhook = async (req, res) => {
 
     const mySignature = crypto
         .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-        .update(req.rawBody)
+        .update(req.rawBody || "")
         .digest("hex");
 
     const signatureBuffer = Buffer.from(razorpaySignature);
