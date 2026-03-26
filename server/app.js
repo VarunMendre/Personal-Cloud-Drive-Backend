@@ -37,7 +37,14 @@ if (!process.env.MY_SECRET_KEY) {
 app.use(
   cookieParser(process.env.MY_SECRET_KEY)
 );
-app.use(express.json());
+
+// Preserves the exact bytes from the network
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
+
 const clientOrigin = process.env.CLIENT_ORIGIN?.replace(/\/$/, "");
 
 app.use(
