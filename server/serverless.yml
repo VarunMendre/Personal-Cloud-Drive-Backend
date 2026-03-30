@@ -18,6 +18,10 @@ provider:
         - Accept
         - Origin
         - X-Requested-With
+        - dirname
+        - x-share-token
+        - x-razorpay-signature
+        - x-hub-signature-256
       allowedMethods:
         - GET
         - POST
