@@ -11,6 +11,7 @@ provider:
       allowedOrigins:
         - https://cloudvault.cloud
         - https://www.cloudvault.cloud
+        - https://app.cloudvault.cloud
       allowedHeaders:
         - Content-Type
         - Authorization
