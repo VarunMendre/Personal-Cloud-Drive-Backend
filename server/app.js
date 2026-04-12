@@ -59,7 +59,7 @@ app.use(
 
 const whitelist = [
   "https://cloudvault.cloud",
-  "https://www.cloudvault.cloud",
+  "https://app.cloudvault.cloud",
   clientOrigin,
 ].filter(Boolean);
 
