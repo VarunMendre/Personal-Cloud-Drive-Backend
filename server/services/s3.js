@@ -24,7 +24,6 @@ export const createUploadSignedUrl = async ({ key, contentType }) => {
 
   const url = await getSignedUrl(s3Client, command, {
     expiresIn: 300,
-    signableHeaders: new Set(["content-type"]),
   });
 
   return url;
