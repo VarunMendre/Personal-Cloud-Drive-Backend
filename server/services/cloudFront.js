@@ -5,7 +5,8 @@ const privateKey = atob(process.env.CLOUDFRONT_PRIVATE_KEY);
 const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID;
 const dateLessThan = new Date(Date.now() + 1000 * 60 * 60).toISOString(); // any Date constructor compatible
 
-const distributionName = process.env.CLOUDFRONT_DOMAIN;
+const rawDomain = process.env.CLOUDFRONT_DOMAIN;
+const distributionName = rawDomain.startsWith("http") ? rawDomain : `https://${rawDomain}`;
 
 export const createCloudFrontSignedGetUrl = ({ key, filename, download = false, expiresInMinutes = 60 }) => {
   const disposition = download ? "attachment" : "inline";

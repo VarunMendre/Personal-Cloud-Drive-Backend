@@ -12,52 +12,56 @@ import { successResponse, errorResponse } from "../utils/response.js";
 import { validateWithSchema } from "../utils/validationWrapper.js";
 import { runInTransaction } from "../utils/transactionHelper.js";
 
-export const getFile = async (req, res) => {
-  const { success, data } = validateWithSchema(getFileSchema, { fileId: req.params.id });
+export const getFile = async (req, res, next) => {
+  try {
+    const { success, data } = validateWithSchema(getFileSchema, { fileId: req.params.id });
 
-  if (!success) {
-    return errorResponse(res, "invalid File Id", 400);
-  }
+    if (!success) {
+      return errorResponse(res, "invalid File Id", 400);
+    }
 
-  const { fileId } = data;
+    const { fileId } = data;
 
-  // Fix IDOR on File Download
-  const fileData = await File.findOne({
-    _id: fileId,
-    $or: [
-      { userId: req.user._id },
-      { "sharedWith.userId": req.user._id }
-    ]
-  });
-
-  // Check if file exists
-  if (!fileData) {
-    return errorResponse(res, "File not found!", 404);
-  }
-
-  const s3Key = `${fileId}${fileData.extension}`;
-
-  const isDownload = req.query.action === "download";
-  let getUrl;
-
-  if (isDownload) {
-    getUrl = await getFileUrl({
-      Key: s3Key,
-      download: true,
-      filename: fileData.name,
+    // Fix IDOR on File Download
+    const fileData = await File.findOne({
+      _id: fileId,
+      $or: [
+        { userId: req.user._id },
+        { "sharedWith.userId": req.user._id }
+      ]
     });
-  } else {
-    getUrl = createCloudFrontSignedGetUrl({
-      key: s3Key,
-      filename: fileData.name,
-    });
-  }
 
-  if (req.query.json === "true") {
-    return successResponse(res, { url: getUrl });
-  }
+    // Check if file exists
+    if (!fileData) {
+      return errorResponse(res, "File not found!", 404);
+    }
 
-  return res.redirect(getUrl);
+    const s3Key = `${fileId}${fileData.extension}`;
+
+    const isDownload = req.query.action === "download";
+    let getUrl;
+
+    if (isDownload) {
+      getUrl = await getFileUrl({
+        Key: s3Key,
+        download: true,
+        filename: fileData.name,
+      });
+    } else {
+      getUrl = createCloudFrontSignedGetUrl({
+        key: s3Key,
+        filename: fileData.name,
+      });
+    }
+
+    if (req.query.json === "true") {
+      return successResponse(res, { url: getUrl });
+    }
+
+    return res.redirect(getUrl);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const renameFile = async (req, res, next) => {
