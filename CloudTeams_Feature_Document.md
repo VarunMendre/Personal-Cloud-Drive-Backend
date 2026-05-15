@@ -1,0 +1,1083 @@
+# CloudVault – Cloud Teams Feature Document
+
+## Project Overview
+
+### Project Name
+**CloudVault – Cloud Teams**
+
+### Parent Platform
+CloudVault
+
+### Feature Type
+Real-time Team Collaboration & File Sharing System
+
+### Purpose
+Cloud Teams introduces secure team-based collaboration inside CloudVault where subscribed users can:
+
+- Create teams
+- Chat in real-time
+- Upload and manage shared files
+- Invite members
+- Manage permissions
+- Collaborate using isolated team storage pools
+
+This feature is designed as a scalable microservice architecture integrated into the existing CloudVault ecosystem.
+
+---
+
+# Core Objectives
+
+Cloud Teams aims to provide:
+
+- Real-time communication
+- Secure file collaboration
+- Team-based storage pools
+- Subscription-based access control
+- Role-based permissions
+- Scalable GraphQL architecture
+- Isolation from personal storage
+- Enterprise-style collaboration system
+
+---
+
+# Subscription Rules
+
+## Free / Default Users
+
+Free users:
+
+- Cannot create teams
+- Cannot join teams
+- Cannot access Cloud Teams
+
+---
+
+## Standard Plan
+
+### Team Limits
+
+| Feature | Limit |
+|---|---|
+| Teams Created | 2 |
+| Teams Joined | 3 |
+| Combined Limit | 5 |
+
+### Team Storage
+
+- 100GB shared pool per team
+
+### Member Distribution Math
+
+Maximum 10 members:
+
+100GB / 10 = 10GB theoretical allocation per member
+
+This is NOT a hard storage cap.
+
+Storage works as:
+- Shared pool
+- First come first served
+- Uploads blocked only when total team storage reaches 100GB
+
+---
+
+## Premium Plan
+
+### Team Limits
+
+| Feature | Limit |
+|---|---|
+| Teams Created | 4 |
+| Teams Joined | 6 |
+| Combined Limit | 10 |
+
+### Team Storage
+
+- 250GB shared pool per team
+
+### Member Distribution Math
+
+250GB / 10 = 25GB theoretical allocation per member
+
+This is NOT a hard cap.
+
+Storage is shared across all members.
+
+---
+
+# Team System
+
+## Team Structure
+
+Each team contains:
+
+- Name
+- Description
+- Avatar / Icon
+- Owner
+- Members
+- Admins
+- Storage Pool
+- Chat System
+- File System
+
+---
+
+## Team Creation Flow
+
+When a subscribed user creates a team:
+
+1. Team document is created
+2. User automatically becomes Team Owner
+3. Storage pool assigned based on plan
+4. Default channels initialized
+5. Member count initialized
+6. Audit logs created
+
+---
+
+# Team Ownership Rules
+
+## Owner Privileges
+
+Only Team Owner can:
+
+- Delete team
+- Transfer ownership
+- Approve join requests
+- Promote admins
+- Revoke invite links
+- Regenerate invite links
+- Kick members
+
+---
+
+## Team Deletion
+
+### Allowed Only For
+Team Owner
+
+### Behavior
+
+Permanent deletion of:
+
+- Messages
+- Files
+- Team metadata
+- Membership records
+- Reactions
+- Read receipts
+- Notifications
+
+### UI Warning
+
+Extremely serious warning required:
+
+"This action permanently deletes all chats, files, and team data. This action cannot be undone."
+
+---
+
+# Ownership Election Logic
+
+## Scenario: Owner Leaves
+
+When Team Owner exits:
+
+### Step 1
+Find members with active subscriptions
+
+### Step 2
+Randomly elect new owner
+
+### Step 3
+Promote elected user automatically
+
+---
+
+## No Eligible Member Exists
+
+If no subscribed member exists:
+
+### Team State Changes To:
+READ-ONLY
+
+### Restrictions
+
+| Action | Allowed |
+|---|---|
+| Send Messages | ❌ |
+| Upload Files | ❌ |
+| View Files | ❌ |
+| Download Files | ❌ |
+
+---
+
+## Recovery Logic
+
+When any member renews subscription:
+
+1. System detects active plan
+2. Automatic owner election triggered
+3. Team restored to active state
+
+---
+
+# Team Storage System
+
+## Important Rule
+
+Team storage is completely separate from personal storage quota.
+
+Example:
+
+- Personal drive = independent
+- Team drive = independent
+
+No storage crossover exists.
+
+---
+
+## Storage Limits
+
+| Plan | Team Pool |
+|---|---|
+| Standard | 100GB |
+| Premium | 250GB |
+
+---
+
+## Upload Restriction Behavior
+
+If storage limit reached:
+
+| Feature | Status |
+|---|---|
+| Text Messages | Allowed |
+| File Uploads | Blocked |
+
+---
+
+# Team Roles
+
+## Roles
+
+1. Team Owner
+2. Admin
+3. Member
+
+---
+
+# Permissions Matrix
+
+| Action | Owner | Admin | Member |
+|---|---|---|---|
+| Delete Team | ✅ | ❌ | ❌ |
+| Direct Invite | ✅ | ✅ | ❌ |
+| Generate Invite Link | ✅ | ✅ | ❌ |
+| Approve Join Requests | ✅ | ❌ | ❌ |
+| Kick Members | ✅ | ❌ | ❌ |
+| Send Messages | ✅ | ✅ | ✅ |
+| Upload Files | ✅ | ✅ | ✅ |
+| Pin Messages | ✅ | ✅ | ❌ |
+| Change Team Info | ✅ | ✅ | ❌ |
+| Promote To Admin | ✅ | ❌ | ❌ |
+
+---
+
+# Invitation System
+
+# Direct Invite System
+
+## Flow
+
+1. Owner/Admin searches user
+2. Search via:
+   - Username
+   - Email
+3. System validates:
+   - Active subscription
+   - Team join limit
+4. Notification sent
+5. Email notification sent
+6. Target accepts
+7. User joins instantly
+
+---
+
+## Important Rules
+
+### Target Has No Subscription
+
+Invite blocked immediately
+
+---
+
+### Target Reached Team Limit
+
+Sender sees error:
+
+"User has reached maximum team limit."
+
+Target never sees request.
+
+---
+
+## Acceptance Behavior
+
+No approval required.
+
+Joining happens instantly after acceptance.
+
+---
+
+# Invite Link System
+
+## Link Generation
+
+Generated by:
+- Team Owner
+- Admin
+
+---
+
+## Link Expiration
+
+Invite links expire after:
+- 7 days
+
+---
+
+## Revoke Rules
+
+Only Team Owner can:
+- Revoke links
+- Regenerate links
+
+---
+
+# Invite Link Join Flow
+
+## Case 1 — No Subscription
+
+User sees:
+
+"Subscribe to CloudVault to join."
+
+---
+
+## Case 2 — Link Expired
+
+User sees:
+
+"Link expired."
+
+---
+
+## Case 3 — Eligible User
+
+Conditions:
+- Active subscription
+- Under team limit
+
+Then user sees:
+- "Send Join Request"
+
+---
+
+# Join Request Flow
+
+1. Request created
+2. Added to owner's pending requests
+3. Owner approves/rejects
+
+---
+
+# Chat System
+
+## Features
+
+- Real-time messaging
+- Emoji reactions
+- Reply/quote messages
+- Read receipts
+- Typing indicators
+- File uploads
+- Message pinning
+
+---
+
+# Message System
+
+## Text Messages
+
+Supports:
+- Plain text
+- Emojis
+- Mentions (future-ready)
+
+---
+
+## Emoji Reactions
+
+Reactions tracked per user.
+
+Example:
+
+{
+  "🔥": ["user1", "user2"],
+  "❤️": ["user3"]
+}
+
+---
+
+# Reply / Quote System
+
+Behavior similar to WhatsApp:
+
+- Reply references original message
+- Original preview shown
+- Deleted originals handled gracefully
+
+---
+
+# File Upload System
+
+## Important Rule
+
+Only fresh uploads allowed.
+
+Users CANNOT upload files from:
+- Personal CloudVault drive
+- Existing storage references
+
+---
+
+## Team File Isolation
+
+Files uploaded in teams:
+
+- Stay inside team only
+- Never appear in personal drive
+
+---
+
+# File Permissions
+
+Uploader controls permissions.
+
+## Permission Types
+
+| Permission | Meaning |
+|---|---|
+| View Only | Can preview only |
+| Download Only | Can download only |
+| View + Download | Both allowed |
+
+---
+
+## Permission Rules
+
+- Uploader may modify permissions later
+- Team Owner cannot override member permissions
+
+---
+
+# Message Deletion Rules
+
+## Members
+
+Can delete:
+- Their own messages only
+
+---
+
+## Admin & Owner
+
+Can delete:
+- Any message
+
+---
+
+# Message Pinning
+
+Allowed for:
+- Team Owner
+- Admin
+
+---
+
+# Read Receipts
+
+Each message tracks:
+
+- Seen users
+- Seen timestamp
+
+---
+
+# New Member Visibility Rule
+
+New members:
+
+- Cannot access old messages
+- Can only see messages sent after joining
+
+---
+
+# Search System
+
+Currently:
+- No message search support
+
+---
+
+# Real-Time System
+
+## Technology
+
+GraphQL Subscriptions using:
+- graphql-ws
+- WebSockets
+
+---
+
+# Real-Time Features
+
+## Instant Messaging
+
+Messages appear instantly.
+
+---
+
+## Typing Indicators
+
+Typing indicators use:
+- Debouncing
+- Auto-timeout cleanup
+
+---
+
+## Presence System
+
+Tracks:
+- Online users
+- Offline users
+- Last active time
+
+---
+
+## Notification System
+
+### Navbar Notifications
+
+Bell notification shown inside:
+app.cloudvault.cloud
+
+---
+
+## Email Notifications
+
+Sent for:
+- Team invites
+- Join approvals
+- Important system events
+
+---
+
+# Subscription Expiry Behavior
+
+| State | Chat | Upload Files | View/Download Files |
+|---|---|---|---|
+| Active Subscription | ✅ | ✅ | ✅ |
+| Expired Subscription | ❌ | ❌ | ❌ |
+| Expired But Already In Team | Real-time Messages Only | ❌ | ❌ |
+
+---
+
+# Platform Owner Permissions
+
+## Platform Owner Can View
+
+- All teams
+- Team count
+- Chats
+- Files
+- Storage metrics
+
+---
+
+## Platform Owner Cannot
+
+- Modify permissions
+- Kick users
+- Change ownership
+- Edit messages
+- Override file access
+
+---
+
+# Architecture Overview
+
+## Frontend
+
+Domain:
+app.cloudvault.cloud
+
+Responsibilities:
+- Team UI
+- GraphQL client
+- Notifications
+- JWT handling
+
+---
+
+## Teams Backend
+
+Domain:
+teams.cloudvault.cloud
+
+Responsibilities:
+- Team management
+- GraphQL API
+- WebSocket subscriptions
+- Permissions
+- Storage tracking
+
+---
+
+# Backend Stack
+
+| Component | Technology |
+|---|---|
+| API | Apollo Server |
+| Protocol | GraphQL |
+| Real-Time | graphql-ws |
+| Database | MongoDB |
+| Auth | JWT |
+| Hosting | DigitalOcean |
+
+---
+
+# Database Design
+
+## Collections
+
+### teams
+
+Stores:
+- Team metadata
+- Owner
+- Storage
+- Settings
+
+---
+
+### team_members
+
+Stores:
+- Roles
+- Join timestamps
+- Status
+
+---
+
+### team_messages
+
+Stores:
+- Chat messages
+- Replies
+- Pins
+- Metadata
+
+---
+
+### team_files
+
+Stores:
+- File metadata
+- Permission rules
+- Storage tracking
+
+---
+
+### team_invites
+
+Stores:
+- Direct invites
+- Invite links
+- Expiry
+
+---
+
+### join_requests
+
+Stores:
+- Pending approvals
+- Approval state
+
+---
+
+### message_reactions
+
+Stores:
+- Emoji reactions
+- User mappings
+
+---
+
+### read_receipts
+
+Stores:
+- Seen timestamps
+- User tracking
+
+---
+
+### notifications
+
+Stores:
+- Bell notifications
+- Invite events
+
+---
+
+# GraphQL Architecture
+
+# Main Types
+
+## Team
+
+Contains:
+- id
+- name
+- description
+- avatar
+- ownerId
+- storageUsed
+- storageLimit
+
+---
+
+## TeamMember
+
+Contains:
+- userId
+- role
+- joinedAt
+- subscriptionStatus
+
+---
+
+## Message
+
+Contains:
+- text
+- sender
+- reactions
+- replyTo
+- pinned
+- timestamps
+
+---
+
+## TeamFile
+
+Contains:
+- filename
+- uploader
+- permissions
+- size
+- mimeType
+
+---
+
+# GraphQL Operations
+
+## Queries
+
+Examples:
+- getTeams
+- getTeam
+- getMessages
+- getMembers
+- getFiles
+
+---
+
+## Mutations
+
+Examples:
+- createTeam
+- sendMessage
+- uploadFile
+- deleteMessage
+- inviteMember
+- approveJoinRequest
+
+---
+
+## Subscriptions
+
+Examples:
+- messageReceived
+- typingStarted
+- typingStopped
+- memberOnline
+- memberOffline
+
+---
+
+# Authentication Strategy
+
+## Existing Auth System
+
+Current CloudVault auth uses:
+- Redis-backed signed cookies
+- sid session cookie
+
+---
+
+# Problem
+
+Teams backend runs on:
+teams.cloudvault.cloud
+
+Cookies do not safely transfer cross-domain.
+
+---
+
+# Solution
+
+## Step 1
+
+Frontend calls:
+
+GET /user
+
+on existing backend.
+
+---
+
+## Step 2
+
+Existing backend validates session cookie.
+
+---
+
+## Step 3
+
+If valid:
+- Backend issues short-lived JWT
+- Expiry: 15 minutes
+
+---
+
+## Step 4
+
+Frontend sends:
+
+Authorization: Bearer <token>
+
+to teams.cloudvault.cloud
+
+---
+
+## Step 5
+
+Teams backend verifies JWT using:
+MY_SECRET_KEY
+
+No database lookup required.
+
+---
+
+# Benefits
+
+## Zero Changes
+
+Existing auth system remains untouched.
+
+---
+
+## Stateless Teams Service
+
+No Redis dependency required.
+
+---
+
+## Shared Secret Strategy
+
+Both services use:
+MY_SECRET_KEY
+
+via environment variables.
+
+---
+
+# CORS Rules
+
+Allowed origin:
+- app.cloudvault.cloud
+
+All other origins blocked.
+
+---
+
+# Security Design
+
+## Security Measures
+
+- JWT validation
+- Role-based access control
+- WebSocket auth validation
+- Invite expiration
+- Permission enforcement
+- Upload validation
+- Rate limiting
+- Audit logging
+
+---
+
+# File Upload Security
+
+Uploads validated for:
+- File size
+- MIME type
+- Malware scanning (future-ready)
+
+---
+
+# Rate Limiting
+
+Recommended:
+- Message spam protection
+- Invite spam protection
+- Upload throttling
+
+---
+
+# Scalability Considerations
+
+## Horizontal Scaling
+
+Apollo instances can scale independently.
+
+---
+
+## WebSocket Scaling
+
+Recommended:
+- Redis Pub/Sub adapter
+
+---
+
+## File Storage
+
+Recommended:
+- Object storage
+- CDN integration
+
+---
+
+# Suggested Folder Structure
+
+```txt
+teams-service/
+│
+├── src/
+│   ├── graphql/
+│   │   ├── schema/
+│   │   ├── resolvers/
+│   │   ├── subscriptions/
+│   │   └── directives/
+│   │
+│   ├── modules/
+│   │   ├── teams/
+│   │   ├── chat/
+│   │   ├── files/
+│   │   ├── invites/
+│   │   ├── auth/
+│   │   └── notifications/
+│   │
+│   ├── websocket/
+│   ├── middleware/
+│   ├── services/
+│   ├── database/
+│   ├── utils/
+│   ├── config/
+│   └── app.ts
+│
+├── uploads/
+├── docker/
+├── .env
+├── package.json
+└── README.md
+```
+
+---
+
+# Real-Time Flow
+
+## Messaging Flow
+
+1. User sends message
+2. GraphQL mutation executed
+3. Message stored in MongoDB
+4. Subscription event published
+5. Connected clients receive instantly
+
+---
+
+# Typing Indicator Flow
+
+1. User starts typing
+2. WebSocket event emitted
+3. Debounce applied
+4. Typing state broadcasted
+5. Auto-clear after timeout
+
+---
+
+# File Upload Flow
+
+1. File selected
+2. Permission selected
+3. Upload validated
+4. Storage quota checked
+5. File uploaded
+6. Metadata saved
+7. Chat message generated
+
+---
+
+# Future Enhancements
+
+## Planned Possibilities
+
+- Voice channels
+- Video meetings
+- Message search
+- AI moderation
+- End-to-end encryption
+- Threaded replies
+- Shared folders
+- Activity analytics
+- Audit dashboard
+
+---
+
+# Conclusion
+
+Cloud Teams transforms CloudVault into a collaborative real-time workspace platform.
+
+The system provides:
+
+- Scalable architecture
+- Strong permissions
+- Team-isolated storage
+- Real-time communication
+- Subscription-aware collaboration
+- Secure file sharing
+- Modern GraphQL infrastructure
+
+This design is production-oriented, extensible, and optimized for future scaling.
