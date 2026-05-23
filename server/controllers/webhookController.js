@@ -1,12 +1,14 @@
 import crypto from "crypto";
 import { WebhookEventHandler } from "../services/webhookevents/index.js";
 import Webhook from "../models/rzpwebhookModel.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import { CustomError } from "../utils/CustomError.js";
 
-export const handleRazorpayWebhook = async (req, res) => {
+export const handleRazorpayWebhook = asyncHandler(async (req, res) => {
     const razorpaySignature = req.headers["x-razorpay-signature"];
 
     if (!razorpaySignature) {
-        return res.status(400).json({ message: "Signature missing" });
+        throw new CustomError("Signature missing", 400);
     }
 
     const mySignature = crypto
@@ -18,7 +20,7 @@ export const handleRazorpayWebhook = async (req, res) => {
     const mySignatureBuffer = Buffer.from(mySignature);
 
     if (signatureBuffer.length !== mySignatureBuffer.length || !crypto.timingSafeEqual(signatureBuffer, mySignatureBuffer)) {
-        return res.status(400).json({ message: "Invalid signature" });
+        throw new CustomError("Invalid signature", 400);
     }
 
     // Extract entity dynamically
@@ -66,4 +68,4 @@ export const handleRazorpayWebhook = async (req, res) => {
     }
 
     res.status(200).end("OK");
-};
+});

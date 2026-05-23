@@ -15,6 +15,7 @@ import helmet from "helmet";
 import { spawn } from "child_process";
 import { rateLimit } from "express-rate-limit";
 import { gitHubWebhook } from "./utils/gitHubWebhook.js";
+import { errorResponse } from "./utils/response.js";
 
 
 
@@ -102,9 +103,17 @@ app.get("/", (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error(err);
-  const status = err.status || 500;
-  const message = err.message || "Something went wrong!";
-  res.status(status).json({ status, message });
+  
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const status = err.statusCode || err.status || 500;
+  const extra = {};
+  if (err.data) extra.data = err.data;
+  if (err.fieldErrors) extra.fieldErrors = err.fieldErrors;
+
+  return errorResponse(res, err, status, extra);
 });
 
 if (!process.env.LAMBDA_TASK_ROOT) {

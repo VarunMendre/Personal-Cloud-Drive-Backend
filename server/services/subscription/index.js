@@ -5,3 +5,5 @@ export { changePlanService } from "./changePlan.js";
 export { getSubscriptionDetailsService } from "./getSubscriptionDetails.js";
 export { pauseSubscriptionService } from "./pauseSubscription.js";
 export { resumeSubscriptionService } from "./resumeSubscription.js";
+export { checkSubscriptionStatusService } from "./subscriptionStatus.js";
+export { getSubscriptionInvoiceService } from "./subscriptionInvoice.js";
