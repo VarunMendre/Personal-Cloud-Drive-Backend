@@ -44,7 +44,7 @@ export const renameFile = asyncHandler(async (req, res) => {
   });
 
   if (!success) {
-    throw new CustomError("Invalid Id's", 400);
+    throw new CustomError("Invalid request: check file ID, filename characters, or version", 400);
   }
   const { fileId, newFilename, userId, version } = data;
 
