@@ -5,10 +5,10 @@ import { getRootDirectorySize } from "../../utils/rootDirectorySize.js";
 import redisClient from "../../config/redis.js";
 
 export const PLAN_INFO = {
-  plan_SMPP6YUub7ZlMM: { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Monthly", price: 349, storage: "100 GB" },
-  plan_SMPQkwuHf1bQKr: { name: "Premium Plan", tagline: "For Professionals & Creators", billingPeriod: "Monthly", price: 999, storage: "200 GB" },
-  plan_SMPLOQNZuavDPZ: { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Yearly", price: 3999, storage: "200 GB" },
-  plan_SMPHSrTBZSIPQl: { name: "Premium Plan", tagline: "For Professionals & Creators", billingPeriod: "Yearly", price: 7999, storage: "300 GB" },
+  plan_Su5pQyZuvix08B: { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Monthly", price: 99, storage: "100 GB" },
+  plan_Su5sJ1cVn0sA3b: { name: "Premium Plan", tagline: "For Professionals & Creators", billingPeriod: "Monthly", price: 199, storage: "200 GB" },
+  plan_Su5qr7eEef1lwX: { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Yearly", price: 999, storage: "200 GB" },
+  plan_Su5t5DYChiXkwM: { name: "Premium Plan", tagline: "For Professionals & Creators", billingPeriod: "Yearly", price: 1999, storage: "300 GB" },
 };
 
 const formatBytes = (bytes) => {

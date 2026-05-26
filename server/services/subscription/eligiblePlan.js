@@ -49,8 +49,8 @@ export const getEligiblePlanService = async (userId) => {
   // Filter out plans with < 1 bonus day
   const eligiblePlans = allPlans.filter(plan => plan.cappedBonusDays >= 1);
 
-  // Check if user is on highest plan (₹7999)
-  if (currentPrice >= 7999) {
+  // Check if user is on highest plan (₹1999)
+  if (currentPrice >= 1999) {
     return {
       eligiblePlans: [],
       daysRemaining,
@@ -82,18 +82,20 @@ export const getEligiblePlanService = async (userId) => {
 // Simple helper to match FE features
 function getPlanFeatures(id) {
   const features = {
-    plan_SMPP6YUub7ZlMM: ["100 GB storage", "1 GB upload limit", "2 devices"],
-    plan_SMPQkwuHf1bQKr: ["200 GB storage", "2 GB upload limit", "3 devices"],
-    plan_SMPLOQNZuavDPZ: [
+    plan_Su5pQyZuvix08B: ["100 GB storage", "1 GB upload limit", "2 devices", "Cloud Teams (2 teams)"],
+    plan_Su5sJ1cVn0sA3b: ["200 GB storage", "2 GB upload limit", "3 devices", "Cloud Teams (4 teams)"],
+    plan_Su5qr7eEef1lwX: [
       "200 GB yearly storage",
       "1 GB upload limit",
       "2 devices",
+      "Cloud Teams (2 teams)",
       "Yearly Savings",
     ],
-    plan_SMPHSrTBZSIPQl: [
+    plan_Su5t5DYChiXkwM: [
       "300 GB yearly storage",
       "2 GB upload limit",
       "3 devices",
+      "Cloud Teams (4 teams)",
       "Priority Support",
     ],
   };

@@ -58,7 +58,7 @@ export const changePlanService = async (userId, planId) => {
       throw error;
     }
 
-    const isYearly = ["plan_SMPLOQNZuavDPZ", "plan_SMPHSrTBZSIPQl"].includes(
+    const isYearly = ["plan_Su5qr7eEef1lwX", "plan_Su5t5DYChiXkwM"].includes(
       planId
     );
 

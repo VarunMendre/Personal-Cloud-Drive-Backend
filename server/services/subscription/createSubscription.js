@@ -32,7 +32,7 @@ export const createSubscriptionService = async (userId, planId) => {
         // just allowing a new one is safer for the user to proceed.
     }
 
-    const isYearly = ["plan_SMPLOQNZuavDPZ", "plan_SMPHSrTBZSIPQl"].includes(planId);
+    const isYearly = ["plan_Su5qr7eEef1lwX", "plan_Su5t5DYChiXkwM"].includes(planId);
 
     const session = await Subscription.startSession();
     session.startTransaction();

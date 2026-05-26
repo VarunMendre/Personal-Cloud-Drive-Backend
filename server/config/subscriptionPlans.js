@@ -10,43 +10,43 @@ export const SUBSCRIPTION_PLANS = {
     price: 0,
   },
   // Standard Monthly
-  plan_SMPP6YUub7ZlMM: {
+  plan_Su5pQyZuvix08B: {
     name: "Standard Plan",
     tagline: "For Students & Freelancers",
     storageQuotaInBytes: 100 * 1024 ** 3, // 100 GB
     maxDevices: 2,
     maxFileSize: 1 * 1024 ** 3, // 1 GB
     billingPeriod: "Monthly",
-    price: 349,
+    price: 99,
   },
   // Premium Monthly
-  plan_SMPQkwuHf1bQKr: {
+  plan_Su5sJ1cVn0sA3b: {
     name: "Premium Plan",
     tagline: "For Professionals & Creators",
     storageQuotaInBytes: 200 * 1024 ** 3, // 200 GB
     maxDevices: 3,
     maxFileSize: 2 * 1024 ** 3, // 2 GB
     billingPeriod: "Monthly",
-    price: 999,
+    price: 199,
   },
   // Standard Yearly
-  plan_SMPLOQNZuavDPZ: {
+  plan_Su5qr7eEef1lwX: {
     name: "Standard Plan",
     tagline: "For Students & Freelancers",
     storageQuotaInBytes: 200 * 1024 ** 3, // 200 GB
     maxDevices: 2,
     maxFileSize: 1 * 1024 ** 3, // 1 GB
     billingPeriod: "Yearly",
-    price: 3999,
+    price: 999,
   },
   // Premium Yearly
-  plan_SMPHSrTBZSIPQl: {
+  plan_Su5t5DYChiXkwM: {
     name: "Premium Plan",
     tagline: "For Professionals & Creators",
     storageQuotaInBytes: 300 * 1024 ** 3, // 300 GB
     maxDevices: 3,
     maxFileSize: 2 * 1024 ** 3, // 2 GB
     billingPeriod: "Yearly",
-    price: 7999,
+    price: 1999,
   },
 };
