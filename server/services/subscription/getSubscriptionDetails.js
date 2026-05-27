@@ -3,6 +3,8 @@ import User from "../../models/userModel.js";
 import File from "../../models/fileModel.js";
 import { getRootDirectorySize } from "../../utils/rootDirectorySize.js";
 import redisClient from "../../config/redis.js";
+import { rzpInstance } from "./createSubscription.js";
+import { SUBSCRIPTION_PLANS } from "../../config/subscriptionPlans.js";
 
 export const PLAN_INFO = {
   plan_Su5pQyZuvix08B: { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Monthly", price: 99, storage: "100 GB" },
@@ -37,13 +39,43 @@ export const getSubscriptionDetailsService = async (userId) => {
   }
 
   // Otherwise, use the latest active/pending one
-  const subscription = subscriptions.find(s => s.status === "active") || latestSub;
+  let subscription = subscriptions.find(s => s.status === "active") || latestSub;
 
   const user = await User.findById(userId);
   if (!user) {
     console.warn("User not found in getSubscriptionDetailsService for ID:", userId);
     return null;
   }
+
+  // Sync with Razorpay if status is in a transient state
+  if (["created", "pending", "authenticated"].includes(subscription.status)) {
+    try {
+      const rzpSub = await rzpInstance.subscriptions.fetch(subscription.razorpaySubscriptionId);
+      console.log(`[Sync] Fetched subscription ${subscription.razorpaySubscriptionId} from Razorpay. Status: ${rzpSub.status}`);
+      
+      if (rzpSub.status === "active" || rzpSub.status === "authenticated" || rzpSub.status === "past_due") {
+        subscription.status = rzpSub.status;
+        subscription.currentPeriodStart = rzpSub.current_start ? new Date(rzpSub.current_start * 1000) : null;
+        subscription.currentPeriodEnd = rzpSub.current_end ? new Date(rzpSub.current_end * 1000) : null;
+        subscription.startDate = rzpSub.start_at ? new Date(rzpSub.start_at * 1000) : null;
+        subscription.endDate = rzpSub.end_at ? new Date(rzpSub.end_at * 1000) : null;
+        await subscription.save();
+
+        const planInfo = SUBSCRIPTION_PLANS[rzpSub.plan_id];
+        if (planInfo) {
+          user.maxStorageLimit = planInfo.storageQuotaInBytes;
+          user.maxDevices = planInfo.maxDevices;
+          user.maxFileSize = planInfo.maxFileSize;
+          user.subscriptionId = rzpSub.id;
+          await user.save();
+          console.log(`[Sync] Updated user ${userId} limits for plan ${rzpSub.plan_id}: Storage=${planInfo.storageQuotaInBytes}, Devices=${planInfo.maxDevices}`);
+        }
+      }
+    } catch (err) {
+      console.error(`[Sync] Failed to sync subscription ${subscription.razorpaySubscriptionId}:`, err.message);
+    }
+  }
+
   const planInfo = PLAN_INFO[subscription.planId] || { name: "Standard Plan", tagline: "For Students & Freelancers", billingPeriod: "Monthly", price: 0 };
 
   const usedInBytes = await getRootDirectorySize(userId);
